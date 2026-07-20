@@ -5,8 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title>DocuCraft | Professional Document Generator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
         body { background-color: #050505; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
@@ -15,7 +14,7 @@
             position: fixed; inset: 0; z-index: 9999; 
             background: linear-gradient(135deg, #0f172a 0%, #000000 100%); 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: opacity 0.8s ease-in-out; 
+            transition: opacity 0.5s ease-in-out; 
         }
         
         .circle-container { position: relative; width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }
@@ -39,7 +38,6 @@
         .tab-btn.active-tab { color: #f59e0b !important; transform: translateY(-3px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
         .glass-card { background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
 
-        /* Printable Document View Styles */
         @media print {
             body * { visibility: hidden; }
             .printable, .printable * { visibility: visible; }
@@ -47,11 +45,29 @@
             .no-print { display: none !important; }
         }
     </style>
+
+    <!-- Instant Removal Script: Runs before anything else loads -->
+    <script>
+        function removeSplash() {
+            var splash = document.getElementById('splash');
+            if (splash && splash.style.display !== 'none') {
+                splash.style.opacity = '0';
+                setTimeout(function() { 
+                    splash.style.display = 'none'; 
+                }, 500);
+            }
+        }
+        // Exactly 1 second timer start right away
+        setTimeout(removeSplash, 1000);
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body class="text-slate-200">
 
     <!-- Splash Screen -->
-    <div id="splash">
+    <div id="splash" onclick="removeSplash()">
         <div class="circle-container">
             <div class="circle circle-1"></div>
             <div class="circle circle-2"></div>
@@ -60,14 +76,13 @@
         <div class="typing-text">INSTANT DOCUMENT HUB</div>
     </div>
 
-    <!-- Top Utility Bar (AdSense / Quick Actions) -->
+    <!-- Top Utility Bar -->
     <div class="fixed top-0 left-0 right-0 z-[60] h-14 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between no-print">
         <div class="flex items-center gap-2">
             <i class="fas fa-file-invoice text-amber-500 text-xl"></i>
             <span class="font-bold tracking-wider text-white">DocuCraft</span>
         </div>
         
-        <!-- Google AdSense Placeholder (Top Banner) -->
         <div class="hidden md:flex text-xs text-slate-500 border border-dashed border-slate-700 px-4 py-1 rounded">
             Ad Space (728x90 Banner)
         </div>
@@ -133,7 +148,6 @@
                         </div>
                     </div>
 
-                    <!-- Items Table -->
                     <table class="w-full text-xs text-left mb-6">
                         <thead>
                             <tr class="border-b-2 border-slate-800 text-slate-700">
@@ -287,7 +301,7 @@
 
     </main>
 
-    <!-- Bottom Luxury Navigation Bar -->
+    <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-6 left-4 right-4 max-w-lg mx-auto luxury-nav rounded-2xl flex justify-around items-center z-[999] h-16 px-4 shadow-2xl border border-white/10 no-print">
         <button onclick="switchTab('tab-invoice', this)" class="tab-btn active-tab flex flex-col items-center">
             <i class="fas fa-file-invoice text-lg"></i>
@@ -307,26 +321,12 @@
         </button>
     </nav>
 
-    <!-- JavaScript Logic -->
+    <!-- Navigation & Utility Functions -->
     <script>
-        // Bulletproof Splash Screen Handler (Max 1.5 Seconds)
-        function hideSplash() {
-            const splash = document.getElementById('splash');
-            if (splash && splash.style.display !== 'none') {
-                splash.style.opacity = '0';
-                setTimeout(() => { 
-                    splash.style.display = 'none'; 
-                }, 800);
-            }
-        }
+        window.addEventListener('load', removeSplash);
 
-        // Window Load Event
-        window.addEventListener('load', hideSplash);
-
-        // Safety Backup (Forced hide after 1.5s if assets take time to load)
-        setTimeout(hideSplash, 1500);
-
-        // Tab Switching Functionality
         function switchTab(tabId, btn) {
             if (navigator.vibrate) navigator.vibrate(15);
-            document.quer
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
+          
