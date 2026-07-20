@@ -1,588 +1,385 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur" dir="ltr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0F172A">
-    <title>Smart Budget - NextGen Cashflow</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Community & Micro-Ledger App</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --bg-color: #0F172A;
-            --card-bg: #1E293B;
-            --accent-blue: #2563EB;
-            --accent-hover: #1D4ED8;
-            --text-primary: #FFFFFF;
-            --text-secondary: #94A3B8;
-            --border-color: #334155;
-            --success-green: #22C55E;
-            --warning-yellow: #EAB308;
-            --danger-red: #EF4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
         body {
-            background-color: var(--bg-color);
-            color: var(--text-primary);
-            display: flex;
-            justify-content: center;
-            padding: 16px;
-            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
         }
-
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            position: relative;
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-
-        .header-card {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 20px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
-            position: relative;
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
         }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
         }
-
-        .subtitle {
-            color: var(--text-secondary);
-            font-size: 11px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
-        }
-
-        .action-tools {
-            display: flex;
-            gap: 6px;
-            align-items: center;
-        }
-
-        .btn-tool {
+        .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #334155;
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 11px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 600;
-            user-select: none;
-            transition: background 0.2s ease, transform 0.1s ease;
-        }
-
-        .btn-tool:active { 
-            background: var(--accent-blue); 
-            transform: scale(0.96);
-        }
-
-        .currency-select {
-            background: #334155;
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-            padding: 6px;
-            border-radius: 8px;
-            font-size: 11px;
-            outline: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .balance-title {
-            font-size: 32px;
-            font-weight: 800;
-            margin: 10px 0 6px 0;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
-            word-break: break-word;
-        }
-
-        .budget-target-sub {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-bottom: 14px;
-        }
-
-        .progress-bar-bg {
-            background-color: var(--border-color);
-            height: 10px;
-            border-radius: 5px;
-            overflow: hidden;
-            margin-bottom: 14px;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            width: 100%;
-            background-color: var(--success-green);
-            transition: width 0.4s ease, background-color 0.4s ease;
-        }
-
-        .limit-card {
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px dashed var(--border-color);
-            border-radius: 12px;
-            padding: 12px 14px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 13px;
-        }
-
-        .limit-info {
-            display: flex;
-            flex-direction: column;
-            gap: 2px;
-        }
-
-        .limit-amount {
-            font-weight: 700;
-            color: var(--accent-blue);
-        }
-
-        .warning-badge {
-            font-size: 11px;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-weight: 600;
-        }
-
-        .badge-safe { background: rgba(34, 197, 94, 0.15); color: var(--success-green); border: 1px solid rgba(34, 197, 94, 0.3); }
-        .badge-warn { background: rgba(234, 179, 8, 0.15); color: var(--warning-yellow); border: 1px solid rgba(234, 179, 8, 0.3); }
-        .badge-danger { background: rgba(239, 68, 68, 0.15); color: var(--danger-red); border: 1px solid rgba(239, 68, 68, 0.3); }
-
-        .form-card {
-            background-color: var(--card-bg);
-            border-radius: 20px;
-            padding: 16px;
-            border: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .category-chips {
-            display: flex;
-            gap: 6px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            scroll-behavior: smooth;
-        }
-
-        .category-chips::-webkit-scrollbar {
-            display: none;
-        }
-
-        .chip {
-            background: #334155;
-            color: var(--text-secondary);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            white-space: nowrap;
-            cursor: pointer;
-            border: 1px solid transparent;
-            user-select: none;
-            transition: all 0.2s ease;
-        }
-
-        .chip.active {
-            background: var(--accent-blue);
-            color: white;
-            font-weight: 600;
-        }
-
-        .input-row {
-            display: flex;
-            gap: 8px;
-        }
-
-        input {
-            background-color: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
-            color: var(--text-primary);
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input:focus { border-color: var(--accent-blue); }
-        .amount-field { width: 40%; }
-        .note-field { width: 60%; }
-
-        .btn-group {
-            display: flex;
-            gap: 8px;
-        }
-
-        button {
-            border: none;
-            border-radius: 10px;
-            padding: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            user-select: none;
-            transition: transform 0.1s ease, background 0.2s ease;
-        }
-
-        button:active {
-            transform: scale(0.97);
-        }
-
-        .btn-add {
-            background-color: var(--accent-blue);
-            color: white;
-            flex-grow: 1;
-        }
-
-        .btn-add:hover { background-color: var(--accent-hover); }
-
-        .btn-mic {
-            background-color: #334155;
-            color: white;
-            width: 48px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-        }
-
-        .btn-mic.listening {
-            background-color: var(--danger-red);
-            animation: pulse 1s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.7; transform: scale(1.05); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .history-card {
-            background-color: var(--bg-color);
-            border-radius: 20px;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .history-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 0 4px;
-        }
-
-        .history-title {
-            font-size: 11px;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            font-weight: 600;
-        }
-
-        .chat-list {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            max-height: 360px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        .chat-bubble {
-            align-self: flex-end;
-            background-color: #1E293B;
-            border: 1px solid #334155;
-            border-left: 4px solid var(--danger-red);
-            border-radius: 14px 14px 2px 14px;
-            padding: 10px 14px;
-            width: 100%;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .chat-header {
-            display: flex;
-            justify-content: space-between;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .chat-note { font-size: 14px; font-weight: 500; word-break: break-word; }
-        .chat-amount { font-size: 15px; font-weight: 700; color: var(--danger-red); white-space: nowrap; }
-
-        .chat-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 10px;
-            color: var(--text-secondary);
-        }
-
-        .btn-del-item {
-            color: var(--danger-red);
-            cursor: pointer;
-            font-size: 13px;
-            margin-left: 8px;
-            padding: 2px 6px;
             border-radius: 4px;
-            transition: background 0.2s;
-        }
-
-        .btn-del-item:active {
-            background: rgba(239, 68, 68, 0.2);
-        }
-
-        .empty-state {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 13px;
-            padding: 30px 0;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--accent-blue);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            display: none;
-            z-index: 999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            pointer-events: none;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col pb-20 md:pb-6">
 
-    <div id="toast" class="toast">Action Saved</div>
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-4 py-3">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
+                    <i class="fa-solid font-bold text-lg fa-wallet"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-white leading-tight">SmartLedger <span class="text-xs text-indigo-400 font-mono font-normal">v1.0</span></h1>
+                    <p class="text-xs text-slate-400">Micro-Savings & Community Expense Tracker</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="exportCSV()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition">
+                    <i class="fa-solid fa-download text-emerald-400"></i> Export
+                </button>
+                <button onclick="shareSummary()" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-xs font-medium border border-emerald-500/30 flex items-center gap-1.5 transition">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> Share
+                </button>
+            </div>
+        </div>
+    </header>
 
-    <div class="app-container">
-        <!-- Top Header Card -->
-        <div class="header-card">
-            <div class="header-top">
-                <div class="subtitle">Remaining Balance</div>
-                <div class="action-tools">
-                    <select class="currency-select" id="currencySelect" onchange="changeCurrency()">
-                        <option value="Rs. ">PKR (Rs.)</option>
-                        <option value="$">$ USD</option>
-                        <option value="€">€ EUR</option>
-                        <option value="£">£ GBP</option>
-                        <option value="₹">₹ INR</option>
-                    </select>
-                    <button class="btn-tool" type="button" onclick="changeMonthlyBudget()">⚙️ Target</button>
+    <!-- Main Container -->
+    <main class="max-w-4xl mx-auto w-full px-4 pt-6 flex-1 space-y-6">
+
+        <!-- Stat Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Total Income -->
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                <div class="absolute -right-2 -top-2 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"></div>
+                <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+                    <span>Total Income</span>
+                    <i class="fa-solid fa-circle-arrow-down text-emerald-400 text-base"></i>
+                </div>
+                <div class="text-2xl font-bold text-white tracking-tight" id="totalIncome">PKR 0</div>
+                <div class="mt-2 text-[11px] text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-up"></i> Total Inflow
                 </div>
             </div>
 
-            <div class="balance-title" id="balanceDisplay">Rs. 0.00</div>
-            <div class="budget-target-sub">Monthly Target: <span id="targetBudgetDisplay">Rs. 50,000</span></div>
-
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="healthBar"></div>
-            </div>
-
-            <div class="limit-card">
-                <div class="limit-info">
-                    <span style="font-size: 11px; color: var(--text-secondary);">Daily Recommended Limit</span>
-                    <span class="limit-amount" id="dailyLimitText">Rs. 0 / day</span>
+            <!-- Total Expenses -->
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
+                <div class="absolute -right-2 -top-2 w-16 h-16 bg-rose-500/10 rounded-full blur-xl"></div>
+                <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
+                    <span>Total Expense</span>
+                    <i class="fa-solid fa-circle-arrow-up text-rose-400 text-base"></i>
                 </div>
-                <div id="statusBadge" class="warning-badge badge-safe">🟢 Safe</div>
-            </div>
-        </div>
-
-        <!-- Expense Form Card -->
-        <div class="form-card">
-            <div class="category-chips">
-                <div class="chip active" onclick="selectChip(this, 'General')">🌐 General</div>
-                <div class="chip" onclick="selectChip(this, 'Food 🍕')">Food 🍕</div>
-                <div class="chip" onclick="selectChip(this, 'Fuel ⛽')">Fuel ⛽</div>
-                <div class="chip" onclick="selectChip(this, 'Bills 💡')">Bills 💡</div>
-                <div class="chip" onclick="selectChip(this, 'Shopping 🛍️')">Shopping 🛍️</div>
-            </div>
-
-            <div class="input-row">
-                <input type="number" id="amountInput" class="amount-field" placeholder="Amount" step="any">
-                <input type="text" id="noteInput" class="note-field" placeholder="Note / Details">
-            </div>
-
-            <div class="btn-group">
-                <button class="btn-mic" id="micBtn" type="button" onclick="toggleVoiceInput()" title="Voice Input">🎙️</button>
-                <button class="btn-add" type="button" onclick="addExpense()">+ Log Expense</button>
-            </div>
-        </div>
-
-        <!-- Log Stream Card -->
-        <div class="history-card">
-            <div class="history-header-row">
-                <span class="history-title">Cashflow Stream Log</span>
-                <div style="display: flex; gap: 6px;">
-                    <button class="btn-tool" type="button" onclick="exportToCSV()">📥 Export</button>
-                    <button class="btn-tool" type="button" onclick="clearAllData()" style="color: var(--danger-red);">🗑️ Reset</button>
+                <div class="text-2xl font-bold text-white tracking-tight" id="totalExpense">PKR 0</div>
+                <div class="mt-2 text-[11px] text-rose-400 flex items-center gap-1">
+                    <i class="fa-solid fa-arrow-trend-down"></i> Total Outflow
                 </div>
             </div>
-            <div class="chat-list" id="chatList"></div>
+
+            <!-- Net Savings / Balance -->
+            <div class="glass-card p-5 rounded-2xl relative overflow-hidden bg-gradient-to-br from-indigo-900/40 to-slate-900/60 border-indigo-500/20">
+                <div class="absolute -right-2 -top-2 w-16 h-16 bg-indigo-500/20 rounded-full blur-xl"></div>
+                <div class="flex items-center justify-between text-indigo-300 text-xs font-medium mb-1">
+                    <span>Net Balance</span>
+                    <i class="fa-solid fa-vault text-indigo-400 text-base"></i>
+                </div>
+                <div class="text-2xl font-bold text-white tracking-tight" id="netBalance">PKR 0</div>
+                <div class="mt-2 text-[11px] text-indigo-300 flex items-center gap-1">
+                    <i class="fa-solid fa-shield-halved"></i> Reserve Fund
+                </div>
+            </div>
         </div>
-    </div>
+
+        <!-- Add Transaction Form & Visual Analytics -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+            
+            <!-- Form Column -->
+            <div class="md:col-span-2 glass-card p-5 rounded-2xl border border-slate-800">
+                <h2 class="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle text-indigo-400"></i> Add New Entry
+                </h2>
+                <form id="txForm" onsubmit="addTransaction(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Type</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" id="btnIncome" onclick="setType('income')" class="py-2 rounded-xl text-xs font-medium border border-slate-700 bg-slate-800 text-slate-300 flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-arrow-down text-emerald-400"></i> Income
+                            </button>
+                            <button type="button" id="btnExpense" onclick="setType('expense')" class="py-2 rounded-xl text-xs font-medium border border-rose-500/40 bg-rose-500/10 text-rose-300 flex items-center justify-center gap-2 transition">
+                                <i class="fa-solid fa-arrow-up text-rose-400"></i> Expense
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Description / Category</label>
+                        <input type="text" id="desc" required placeholder="e.g. Utility Bills, Fund Deposit, Groceries" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Amount (PKR)</label>
+                        <input type="number" id="amount" required placeholder="0.00" min="1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs text-slate-400 mb-1">Category</label>
+                        <select id="category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition">
+                            <option value="General">General / Other</option>
+                            <option value="Community Welfare">Community Welfare</option>
+                            <option value="Utilities">Utilities & Bills</option>
+                            <option value="Food & Provisions">Food & Provisions</option>
+                            <option value="Emergency Fund">Emergency Fund</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-check-circle"></i> Save Entry
+                    </button>
+                </form>
+            </div>
+
+            <!-- Chart Column -->
+            <div class="md:col-span-3 glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-pie text-indigo-400"></i> Financial Breakdown
+                    </h2>
+                    <p class="text-xs text-slate-400 mb-4">Visual summary of income vs expenses</p>
+                </div>
+                <div class="relative w-full h-48 flex justify-center items-center">
+                    <canvas id="financeChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Transactions History -->
+        <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
+                <h2 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-indigo-400"></i> Recent Ledger Records
+                </h2>
+                <button onclick="clearAllData()" class="text-xs text-rose-400 hover:text-rose-300 transition flex items-center gap-1">
+                    <i class="fa-solid fa-trash"></i> Clear All
+                </button>
+            </div>
+
+            <div class="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
+                <table class="w-full text-left text-xs text-slate-300">
+                    <thead class="bg-slate-900/60 text-slate-400 uppercase text-[10px] tracking-wider sticky top-0 backdrop-blur-md">
+                        <tr>
+                            <th class="px-4 py-3">Date</th>
+                            <th class="px-4 py-3">Description</th>
+                            <th class="px-4 py-3">Category</th>
+                            <th class="px-4 py-3 text-right">Amount</th>
+                            <th class="px-4 py-3 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="txTableBody" class="divide-y divide-slate-800/60">
+                        <!-- Dynamic content -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
 
     <script>
-        let selectedCurrency = localStorage.getItem('smart_currency') || 'Rs. ';
-        let monthlyBudget = parseFloat(localStorage.getItem('smart_monthly_budget')) || 50000;
-        let transactions = JSON.parse(localStorage.getItem('smart_budget_data')) || [];
-        let selectedCategory = 'General';
+        let transactions = JSON.parse(localStorage.getItem('smart_ledger_tx')) || [
+            { id: 1, type: 'income', desc: 'Initial Fund Collection', amount: 25000, category: 'Community Welfare', date: '2026-07-20' },
+            { id: 2, type: 'expense', desc: 'Emergency Relief & Supplies', amount: 8500, category: 'Emergency Fund', date: '2026-07-21' }
+        ];
 
-        // Load saved currency value into dropdown
-        const currElem = document.getElementById('currencySelect');
-        if (currElem) currElem.value = selectedCurrency;
+        let currentType = 'expense';
+        let chartInstance = null;
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            if (!toast) return;
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2200);
-        }
+        function setType(type) {
+            currentType = type;
+            const btnIn = document.getElementById('btnIncome');
+            const btnEx = document.getElementById('btnExpense');
 
-        function selectChip(el, category) {
-            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-            el.classList.add('active');
-            selectedCategory = category;
-        }
-
-        function changeCurrency() {
-            selectedCurrency = document.getElementById('currencySelect').value;
-            localStorage.setItem('smart_currency', selectedCurrency);
-            showToast("Currency set to " + selectedCurrency);
-            updateUI();
-        }
-
-        function changeMonthlyBudget() {
-            const inputVal = prompt("Set Your Monthly Target Budget:", monthlyBudget);
-            if (inputVal !== null) {
-                const parsedVal = parseFloat(inputVal);
-                if (!isNaN(parsedVal) && parsedVal > 0) {
-                    monthlyBudget = parsedVal;
-                    localStorage.setItem('smart_monthly_budget', monthlyBudget);
-                    showToast("Budget Target Updated!");
-                    updateUI();
-                } else {
-                    alert("Please enter a valid positive number.");
-                }
+            if (type === 'income') {
+                btnIn.className = 'py-2 rounded-xl text-xs font-medium border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center gap-2 transition';
+                btnEx.className = 'py-2 rounded-xl text-xs font-medium border border-slate-700 bg-slate-800 text-slate-400 flex items-center justify-center gap-2 transition';
+            } else {
+                btnEx.className = 'py-2 rounded-xl text-xs font-medium border border-rose-500/40 bg-rose-500/10 text-rose-300 flex items-center justify-center gap-2 transition';
+                btnIn.className = 'py-2 rounded-xl text-xs font-medium border border-slate-700 bg-slate-800 text-slate-400 flex items-center justify-center gap-2 transition';
             }
         }
 
-        function getDaysRemainingInMonth() {
-            const now = new Date();
-            const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            return (lastDay - now.getDate()) + 1;
+        function addTransaction(e) {
+            e.preventDefault();
+            const desc = document.getElementById('desc').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const category = document.getElementById('category').value;
+            const date = new Date().toISOString().split('T')[0];
+
+            const newTx = {
+                id: Date.now(),
+                type: currentType,
+                desc,
+                amount,
+                category,
+                date
+            };
+
+            transactions.unshift(newTx);
+            saveAndUpdate();
+            document.getElementById('txForm').reset();
+            setType('expense');
         }
 
-        function getTodaySpent() {
-            const todayStr = new Date().toLocaleDateString();
-            return transactions
-                .filter(t => t.rawDate === todayStr)
-                .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
+        function deleteTx(id) {
+            transactions = transactions.filter(t => t.id !== id);
+            saveAndUpdate();
         }
 
-        function deleteItem(index) {
-            if (confirm("Delete this expense entry?")) {
-                transactions.splice(index, 1);
-                localStorage.setItem('smart_budget_data', JSON.stringify(transactions));
-                showToast("Entry Deleted");
-                updateUI();
+        function clearAllData() {
+            if(confirm("Are you sure you want to clear all records?")) {
+                transactions = [];
+                saveAndUpdate();
             }
         }
 
-        function escapeHTML(str) {
-            return str.replace(/[&<>'"]/g, 
-                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-            );
+        function saveAndUpdate() {
+            localStorage.setItem('smart_ledger_tx', JSON.stringify(transactions));
+            renderUI();
         }
 
-        function updateUI() {
-            const chatElement = document.getElementById('chatList');
-            if (!chatElement) return;
+        function renderUI() {
+            const tableBody = document.getElementById('txTableBody');
+            tableBody.innerHTML = '';
 
-            chatElement.innerHTML = '';
-            
-            // Re-calculate Total Spent dynamically from array
-            const totalSpent = transactions.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
+            let totalIn = 0;
+            let totalEx = 0;
 
             if (transactions.length === 0) {
-                chatElement.innerHTML = '<div class="empty-state">No expense logs yet. Add or speak your entry!</div>';
-            } else {
-                transactions.slice().reverse().forEach((item, revIdx) => {
-                    const actualIdx = transactions.length - 1 - revIdx;
-
-                    const bubble = document.createElement('div');
-                    bubble.className = 'chat-bubble';
-                    bubble.innerHTML = `
-                        <div class="chat-header">
-                            <span class="chat-note">${escapeHTML(item.note)}</span>
-                            <span class="chat-amount">- ${selectedCurrency}${parseFloat(item.amount).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</span>
-                        </div>
-                        <div class="chat-footer">
-                            <span>${escapeHTML(item.time)}</span>
-                            <div>
-                                <span style="color: #38BDF8;">✓✓</span>
-                                <span class="btn-del-item" onclick="deleteItem(${actualIdx})" title="Delete">🗑️</span>
-                            </div>
-                        </div>
-                    `;
-                    chatElement.appendChild(bubble);
-                });
+                tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">No records found. Add your first transaction above!</td></tr>`;
             }
 
-            // Calculations & UI Updates
-            const remaining = monthlyBudget - totalSpent;
-            document.getElementById('balanceDisplay').innerText = `${selectedCurrency}${remaining.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('targetBudgetDisplay').innerText = `${selectedCurrency}${monthlyBudget.toLocaleString('en-US')}`;
+            transactions.forEach(tx => {
+                if(tx.type === 'income') totalIn += tx.amount;
+                else totalEx += tx.amount;
 
-            let healthPercent = (remaining / monthlyBudget) * 100;
-            if (healthPercent < 0) healthPercent = 0;
-            if (healthPercent > 100) healthPercent = 100;
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-800/30 transition';
+                tr.innerHTML = `
+                    <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${tx.date}</td>
+                    <td class="px-4 py-3 font-medium text-slate-200">${tx.desc}</td>
+                    <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 border border-slate-700 text-slate-300">${tx.category}</span></td>
+                    <td class="px-4 py-3 text-right font-semibold ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
+                        ${tx.type === 'income' ? '+' : '-'} PKR ${tx.amount.toLocaleString()}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="deleteTx(${tx.id})" class="text-slate-500 hover:text-rose-400 transition"><i class="fa-regular fa-trash-can"></i></button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
 
-            const healthBar = document.getElementById('healthBar');
-            if (healthBar) healthBar.style.width = `${healthPercent}%`;
-
-            const daysLeft = getDaysRemainingInMonth();
-            const dailyRecommended = remaining > 0 ? (remaining / daysLeft) : 0;
-            document.getElementById('dailyLimitText').innerText = `${selectedCurrency}${Math.round(dailyRecommended).toLocaleString()} / day`;
-
-            const todaySpent = getTodaySpent();
-            const statusBadge = document.getElementById('statusBadge');
-
-            if (statusBadge && healthBar) {
-                if (remaining <= 0) {
+            document.getElementById('totalIncome').innerText = `PKR ${totalIn.toLocaleString()}`;
+            document.getElementById('totalExpense').innerText = `PKR ${totalEx.toLocaleString()}`;
             
+            const net = totalIn - totalEx;
+            const netEl = document.getElementById('netBalance');
+            netEl.innerText = `PKR ${net.toLocaleString()}`;
+            if(net >= 0) {
+                netEl.className = "text-2xl font-bold text-emerald-400 tracking-tight";
+            } else {
+                netEl.className = "text-2xl font-bold text-rose-400 tracking-tight";
+            }
+
+            updateChart(totalIn, totalEx);
+        }
+
+        function updateChart(income, expense) {
+            const ctx = document.getElementById('financeChart').getContext('2d');
+            
+            if(chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Income', 'Expense'],
+                    datasets: [{
+                        data: [income, expense],
+                        backgroundColor: ['#10b981', '#f43f5e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { color: '#94a3b8', font: { size: 11 } }
+                        }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        function shareSummary() {
+            let totalIn = transactions.filter(t => t.type === 'income').reduce((a,b) => a + b.amount, 0);
+            let totalEx = transactions.filter(t => t.type === 'expense').reduce((a,b) => a + b.amount, 0);
+            let balance = totalIn - totalEx;
+
+            let msg = `📊 *SmartLedger Financial Summary*
+
+` +
+                      `🟢 Total Inflow: PKR ${totalIn.toLocaleString()}
+` +
+                      `🔴 Total Outflow: PKR ${totalEx.toLocaleString()}
+` +
+                      `💰 Net Reserve: PKR ${balance.toLocaleString()}
+
+` +
+                      `Shared via SmartLedger PWA App.`;
+
+            let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Date,Type,Description,Category,Amount
+";
+            transactions.forEach(t => {
+                csvContent += `${t.date},${t.type},"${t.desc}",${t.category},${t.amount}
+`;
+            });
+            let encodedUri = encodeURI(csvContent);
+            let link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "smart_ledger_transactions.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Initial setup
+        window.onload = () => {
+            renderUI();
+        };
+    </script>
+</body>
+</html>
+
+
