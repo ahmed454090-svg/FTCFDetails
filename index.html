@@ -23,7 +23,7 @@
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -87,10 +87,13 @@
             gap: 4px;
             font-weight: 600;
             user-select: none;
-            -webkit-user-select: none;
+            transition: background 0.2s ease, transform 0.1s ease;
         }
 
-        .btn-tool:active { background: var(--accent-blue); }
+        .btn-tool:active { 
+            background: var(--accent-blue); 
+            transform: scale(0.96);
+        }
 
         .currency-select {
             background: #334155;
@@ -110,6 +113,7 @@
             margin: 10px 0 6px 0;
             color: var(--text-primary);
             letter-spacing: -0.5px;
+            word-break: break-word;
         }
 
         .budget-target-sub {
@@ -181,6 +185,11 @@
             gap: 6px;
             overflow-x: auto;
             padding-bottom: 4px;
+            scroll-behavior: smooth;
+        }
+
+        .category-chips::-webkit-scrollbar {
+            display: none;
         }
 
         .chip {
@@ -193,11 +202,13 @@
             cursor: pointer;
             border: 1px solid transparent;
             user-select: none;
+            transition: all 0.2s ease;
         }
 
         .chip.active {
             background: var(--accent-blue);
             color: white;
+            font-weight: 600;
         }
 
         .input-row {
@@ -213,6 +224,7 @@
             color: var(--text-primary);
             font-size: 14px;
             outline: none;
+            transition: border-color 0.2s;
         }
 
         input:focus { border-color: var(--accent-blue); }
@@ -231,7 +243,11 @@
             font-weight: 600;
             cursor: pointer;
             user-select: none;
-            -webkit-user-select: none;
+            transition: transform 0.1s ease, background 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.97);
         }
 
         .btn-add {
@@ -240,7 +256,7 @@
             flex-grow: 1;
         }
 
-        .btn-add:active { background-color: var(--accent-hover); }
+        .btn-add:hover { background-color: var(--accent-hover); }
 
         .btn-mic {
             background-color: #334155;
@@ -258,9 +274,9 @@
         }
 
         @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         .history-card {
@@ -305,7 +321,7 @@
             border-left: 4px solid var(--danger-red);
             border-radius: 14px 14px 2px 14px;
             padding: 10px 14px;
-            max-width: 88%;
+            width: 100%;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
@@ -319,8 +335,8 @@
             align-items: center;
         }
 
-        .chat-note { font-size: 14px; font-weight: 500; }
-        .chat-amount { font-size: 15px; font-weight: 700; color: var(--danger-red); }
+        .chat-note { font-size: 14px; font-weight: 500; word-break: break-word; }
+        .chat-amount { font-size: 15px; font-weight: 700; color: var(--danger-red); white-space: nowrap; }
 
         .chat-footer {
             display: flex;
@@ -333,9 +349,15 @@
         .btn-del-item {
             color: var(--danger-red);
             cursor: pointer;
-            font-size: 12px;
+            font-size: 13px;
             margin-left: 8px;
             padding: 2px 6px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .btn-del-item:active {
+            background: rgba(239, 68, 68, 0.2);
         }
 
         .empty-state {
@@ -358,7 +380,8 @@
             font-weight: 600;
             display: none;
             z-index: 999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+            pointer-events: none;
         }
     </style>
 </head>
@@ -410,7 +433,7 @@
             </div>
 
             <div class="input-row">
-                <input type="number" id="amountInput" class="amount-field" placeholder="Amount">
+                <input type="number" id="amountInput" class="amount-field" placeholder="Amount" step="any">
                 <input type="text" id="noteInput" class="note-field" placeholder="Note / Details">
             </div>
 
@@ -439,7 +462,7 @@
         let transactions = JSON.parse(localStorage.getItem('smart_budget_data')) || [];
         let selectedCategory = 'General';
 
-        // Initialize currency selector dropdown
+        // Load saved currency value into dropdown
         const currElem = document.getElementById('currencySelect');
         if (currElem) currElem.value = selectedCurrency;
 
@@ -448,7 +471,7 @@
             if (!toast) return;
             toast.innerText = msg;
             toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+            setTimeout(() => { toast.style.display = 'none'; }, 2200);
         }
 
         function selectChip(el, category) {
@@ -465,12 +488,17 @@
         }
 
         function changeMonthlyBudget() {
-            const newBudget = prompt("Set Your Monthly Target Budget:", monthlyBudget);
-            if (newBudget !== null && !isNaN(parseFloat(newBudget)) && parseFloat(newBudget) > 0) {
-                monthlyBudget = parseFloat(newBudget);
-                localStorage.setItem('smart_monthly_budget', monthlyBudget);
-                showToast("Budget Target Updated!");
-                updateUI();
+            const inputVal = prompt("Set Your Monthly Target Budget:", monthlyBudget);
+            if (inputVal !== null) {
+                const parsedVal = parseFloat(inputVal);
+                if (!isNaN(parsedVal) && parsedVal > 0) {
+                    monthlyBudget = parsedVal;
+                    localStorage.setItem('smart_monthly_budget', monthlyBudget);
+                    showToast("Budget Target Updated!");
+                    updateUI();
+                } else {
+                    alert("Please enter a valid positive number.");
+                }
             }
         }
 
@@ -484,7 +512,7 @@
             const todayStr = new Date().toLocaleDateString();
             return transactions
                 .filter(t => t.rawDate === todayStr)
-                .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+                .reduce((sum, t) => sum + parseFloat(t.amount || 0), 0);
         }
 
         function deleteItem(index) {
@@ -496,32 +524,39 @@
             }
         }
 
+        function escapeHTML(str) {
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
         function updateUI() {
             const chatElement = document.getElementById('chatList');
             if (!chatElement) return;
 
             chatElement.innerHTML = '';
-            let totalSpent = 0;
+            
+            // Re-calculate Total Spent dynamically from array
+            const totalSpent = transactions.reduce((sum, item) => sum + parseFloat(item.amount || 0), 0);
 
             if (transactions.length === 0) {
                 chatElement.innerHTML = '<div class="empty-state">No expense logs yet. Add or speak your entry!</div>';
             } else {
                 transactions.slice().reverse().forEach((item, revIdx) => {
                     const actualIdx = transactions.length - 1 - revIdx;
-                    totalSpent += parseFloat(item.amount);
 
                     const bubble = document.createElement('div');
                     bubble.className = 'chat-bubble';
                     bubble.innerHTML = `
                         <div class="chat-header">
-                            <span class="chat-note">${item.note}</span>
-                            <span class="chat-amount">- ${selectedCurrency}${parseFloat(item.amount).toFixed(0)}</span>
+                            <span class="chat-note">${escapeHTML(item.note)}</span>
+                            <span class="chat-amount">- ${selectedCurrency}${parseFloat(item.amount).toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 2})}</span>
                         </div>
                         <div class="chat-footer">
-                            <span>${item.time}</span>
+                            <span>${escapeHTML(item.time)}</span>
                             <div>
                                 <span style="color: #38BDF8;">✓✓</span>
-                                <span class="btn-del-item" onclick="deleteItem(${actualIdx})">🗑️</span>
+                                <span class="btn-del-item" onclick="deleteItem(${actualIdx})" title="Delete">🗑️</span>
                             </div>
                         </div>
                     `;
@@ -531,11 +566,12 @@
 
             // Calculations & UI Updates
             const remaining = monthlyBudget - totalSpent;
-            document.getElementById('balanceDisplay').innerText = `${selectedCurrency}${remaining.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('balanceDisplay').innerText = `${selectedCurrency}${remaining.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
             document.getElementById('targetBudgetDisplay').innerText = `${selectedCurrency}${monthlyBudget.toLocaleString('en-US')}`;
 
             let healthPercent = (remaining / monthlyBudget) * 100;
             if (healthPercent < 0) healthPercent = 0;
+            if (healthPercent > 100) healthPercent = 100;
 
             const healthBar = document.getElementById('healthBar');
             if (healthBar) healthBar.style.width = `${healthPercent}%`;
@@ -549,37 +585,4 @@
 
             if (statusBadge && healthBar) {
                 if (remaining <= 0) {
-                    healthBar.style.backgroundColor = 'var(--danger-red)';
-                    statusBadge.className = 'warning-badge badge-danger';
-                    statusBadge.innerText = '🔴 Exhausted';
-                } else if (todaySpent > dailyRecommended) {
-                    healthBar.style.backgroundColor = 'var(--warning-yellow)';
-                    statusBadge.className = 'warning-badge badge-warn';
-                    statusBadge.innerText = '⚠️ Over Limit';
-                } else {
-                    healthBar.style.backgroundColor = 'var(--success-green)';
-                    statusBadge.className = 'warning-badge badge-safe';
-                    statusBadge.innerText = '🟢 Safe Limit';
-                }
-            }
-        }
-
-        function addExpense() {
-            const amountInput = document.getElementById('amountInput');
-            const noteInput = document.getElementById('noteInput');
-
-            const amount = parseFloat(amountInput.value);
-            let note = noteInput.value.trim();
-            if (!note) note = selectedCategory;
-
-            if (isNaN(amount) || amount <= 0) {
-                alert('Please enter a valid amount!');
-                return;
-            }
-
-            const now = new Date();
-            const newTransaction = {
-                amount: amount,
-                note: note,
-                rawDate: now.toLocaleDateString(),
-                time: now.toLocaleTimeString([], { h
+            
