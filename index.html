@@ -14,7 +14,7 @@
             position: fixed; inset: 0; z-index: 9999; 
             background: linear-gradient(135deg, #0f172a 0%, #000000 100%); 
             display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: opacity 0.5s ease-in-out; 
+            transition: opacity 0.4s ease-in-out; 
         }
         
         .circle-container { position: relative; width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }
@@ -29,11 +29,12 @@
         @keyframes typing { from { width: 0 } to { width: 22ch } }
         @keyframes blink { from, to { border-color: transparent } 50% { border-color: #f59e0b } }
         
-        .tab-content { display: none; min-height: 100vh; padding-bottom: 120px; padding-top: 80px; }
-        .tab-content.active { display: block; }
+        /* Tab Styles Fix */
+        .tab-content { display: none !important; min-height: 100vh; padding-bottom: 120px; padding-top: 80px; }
+        .tab-content.active { display: block !important; }
         
         .luxury-nav { background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .tab-btn { transition: all 0.3s ease; color: #94a3b8; }
+        .tab-btn { transition: all 0.3s ease; color: #94a3b8; cursor: pointer; }
         .tab-btn:hover { color: #ffffff; }
         .tab-btn.active-tab { color: #f59e0b !important; transform: translateY(-3px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
         .glass-card { background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
@@ -46,18 +47,15 @@
         }
     </style>
 
-    <!-- Instant Removal Script: Runs before anything else loads -->
+    <!-- Instant Removal Script for Splash Screen -->
     <script>
         function removeSplash() {
             var splash = document.getElementById('splash');
             if (splash && splash.style.display !== 'none') {
                 splash.style.opacity = '0';
-                setTimeout(function() { 
-                    splash.style.display = 'none'; 
-                }, 500);
+                setTimeout(function() { splash.style.display = 'none'; }, 400);
             }
         }
-        // Exactly 1 second timer start right away
         setTimeout(removeSplash, 1000);
     </script>
 
@@ -304,29 +302,29 @@
     <!-- Bottom Navigation Bar -->
     <nav class="fixed bottom-6 left-4 right-4 max-w-lg mx-auto luxury-nav rounded-2xl flex justify-around items-center z-[999] h-16 px-4 shadow-2xl border border-white/10 no-print">
         <button onclick="switchTab('tab-invoice', this)" class="tab-btn active-tab flex flex-col items-center">
-            <i class="fas fa-file-invoice text-lg"></i>
-            <span class="text-[9px] font-semibold mt-1">Invoice</span>
+            <i class="fas fa-file-invoice text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Invoice</span>
         </button>
         <button onclick="switchTab('tab-letterhead', this)" class="tab-btn flex flex-col items-center">
-            <i class="fas fa-file-alt text-lg"></i>
-            <span class="text-[9px] font-semibold mt-1">Letterhead</span>
+            <i class="fas fa-file-alt text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Letterhead</span>
         </button>
         <button onclick="switchTab('tab-receipt', this)" class="tab-btn flex flex-col items-center">
-            <i class="fas fa-money-check-alt text-lg"></i>
-            <span class="text-[9px] font-semibold mt-1">Receipt</span>
+            <i class="fas fa-money-check-alt text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Receipt</span>
         </button>
         <button onclick="switchTab('tab-register', this)" class="tab-btn flex flex-col items-center">
-            <i class="fas fa-id-card text-lg"></i>
-            <span class="text-[9px] font-semibold mt-1">Register</span>
+            <i class="fas fa-id-card text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Register</span>
         </button>
     </nav>
 
-    <!-- Navigation & Utility Functions -->
+    <!-- Tab Switching Logic Fix -->
     <script>
         window.addEventListener('load', removeSplash);
 
         function switchTab(tabId, btn) {
             if (navigator.vibrate) navigator.vibrate(15);
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab'));
-          
+            
+            // All tabs reset
+            var tabs = document.querySelectorAll('
