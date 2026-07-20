@@ -35,12 +35,19 @@
 
         .tab-btn.active-btn { color: #f59e0b !important; transform: translateY(-2px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
 
-        /* Splash Screen */
+        /* FIXED Splash Screen - Never Blocks Clicks */
         #splash {
             position: fixed; inset: 0; z-index: 9000;
             background: linear-gradient(135deg, #0f172a 0%, #000000 100%);
             display: flex; flex-direction: column; justify-content: center; align-items: center;
-            pointer-events: none; opacity: 1; transition: opacity 0.4s ease;
+            pointer-events: none !important; /* Critical Fix: Clicks pass right through */
+            opacity: 1; transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #splash.hidden {
+            opacity: 0 !important;
+            visibility: hidden !important;
+            display: none !important;
         }
 
         .card {
@@ -273,7 +280,7 @@
             </div>
         </section>
 
-        <!-- SECTION 4: ID CARD BUILDER (NEW) -->
+        <!-- SECTION 4: ID CARD BUILDER -->
         <section id="sec-idcard" class="tab-content">
             <div class="card">
                 <div class="flex justify-between items-center mb-6 no-print">
@@ -337,6 +344,4 @@
                                     <input type="text" value="+92 300 0000000" class="font-mono text-slate-900 w-full mt-0.5">
                                 </div>
 
-                                <div>
-                                    <p class="font-bold text-slate-800">Head Office:</p>
-                                    <textarea class="w-full text-[9px] text-slate-600 resize-none h-10 border-none outline-none mt-0.5" placeholder=
+          
