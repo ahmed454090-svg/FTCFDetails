@@ -6,12 +6,28 @@
     <title>DocuCraft | Document Generator</title>
     
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #050505; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
 
-        /* Fail-safe Direct CSS Display Toggle */
+        /* Absolute Fail-Safe Splash Screen Animation */
+        @keyframes fadeAndHide {
+            0% { opacity: 1; visibility: visible; }
+            70% { opacity: 1; visibility: visible; }
+            99% { opacity: 0; visibility: visible; }
+            100% { opacity: 0; visibility: hidden; display: none !important; pointer-events: none !important; }
+        }
+
+        #splash {
+            position: fixed; inset: 0; z-index: 99999;
+            background: linear-gradient(135deg, #0f172a 0%, #000000 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            pointer-events: none !important;
+            animation: fadeAndHide 0.8s forwards ease-out; /* Auto kill in 0.8 seconds via pure CSS */
+        }
+
+        /* Direct CSS Tab Display Control */
         .tab-content { display: none !important; padding-top: 70px; padding-bottom: 120px; }
         .tab-content.active { display: block !important; }
 
@@ -34,21 +50,6 @@
         }
 
         .tab-btn.active-btn { color: #f59e0b !important; transform: translateY(-2px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-
-        /* FIXED Splash Screen - Never Blocks Clicks */
-        #splash {
-            position: fixed; inset: 0; z-index: 9000;
-            background: linear-gradient(135deg, #0f172a 0%, #000000 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            pointer-events: none !important; /* Critical Fix: Clicks pass right through */
-            opacity: 1; transition: opacity 0.3s ease, visibility 0.3s ease;
-        }
-
-        #splash.hidden {
-            opacity: 0 !important;
-            visibility: hidden !important;
-            display: none !important;
-        }
 
         .card {
             background: rgba(18, 18, 18, 0.95); border: 1px solid rgba(255,255,255,0.08);
@@ -88,7 +89,7 @@
         .id-photo-frame {
             width: 90px; height: 100px; border-radius: 12px; border: 2px solid #f59e0b;
             margin: 15px auto 10px auto; background: #f1f5f9; display: flex;
-            align-items: center; justify-content: center; overflow: hidden;
+            align-items: center; justify-content: center; overflow: hidden; font-size: 28px; color: #94a3b8;
         }
 
         @media print {
@@ -100,20 +101,19 @@
     </style>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
 
-    <!-- Splash Screen -->
+    <!-- Splash Screen (Self-Destroying) -->
     <div id="splash">
         <h1 style="color:#ffffff; font-size:22px; font-weight:800; letter-spacing: 2px;">DOCU<span style="color:#f59e0b;">CRAFT</span></h1>
         <p style="color:#f59e0b; font-size:11px; margin-top:6px; font-weight: 600;">LOADING WORKSPACE...</p>
     </div>
 
-    <!-- Top Utility Bar -->
+    <!-- Top Bar -->
     <div class="fixed top-0 left-0 right-0 z-[60] h-14 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between no-print">
         <div class="flex items-center gap-2">
-            <i class="fas fa-file-invoice text-amber-500 text-xl"></i>
+            <span class="text-amber-500 font-black text-lg">📄</span>
             <span class="font-bold tracking-wider text-white">DocuCraft</span>
         </div>
         <div class="text-xs text-slate-400 font-semibold">Document Generator</div>
@@ -125,8 +125,8 @@
         <section id="sec-invoice" class="tab-content active">
             <div class="card">
                 <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-receipt mr-2"></i>Invoice Builder</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400"><i class="fas fa-print mr-1"></i> Print / PDF</button>
+                    <h2 class="text-xl font-bold text-amber-500">📄 Invoice Builder</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
                 </div>
                 
                 <div class="printable print-area">
@@ -203,8 +203,8 @@
         <section id="sec-letterhead" class="tab-content">
             <div class="card">
                 <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-file-alt mr-2"></i>Official Letterhead</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400"><i class="fas fa-print mr-1"></i> Print / PDF</button>
+                    <h2 class="text-xl font-bold text-amber-500">📝 Official Letterhead</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
                 </div>
                 
                 <div class="printable print-area">
@@ -237,8 +237,8 @@
         <section id="sec-receipt" class="tab-content">
             <div class="card">
                 <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-money-check-alt mr-2"></i>Payment Receipt</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400"><i class="fas fa-print mr-1"></i> Print / PDF</button>
+                    <h2 class="text-xl font-bold text-amber-500">💵 Payment Receipt</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
                 </div>
 
                 <div class="printable print-area">
@@ -284,8 +284,8 @@
         <section id="sec-idcard" class="tab-content">
             <div class="card">
                 <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-id-badge mr-2"></i>Membership ID Card Builder</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400"><i class="fas fa-print mr-1"></i> Print / PDF</button>
+                    <h2 class="text-xl font-bold text-amber-500">🪪 Membership ID Card Builder</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
                 </div>
 
                 <div class="printable print-area">
@@ -301,7 +301,7 @@
                             </div>
 
                             <div class="id-photo-frame">
-                                <i class="fas fa-user text-3xl text-slate-300"></i>
+                                👤
                             </div>
 
                             <div class="px-4 text-center">
@@ -344,4 +344,6 @@
                                     <input type="text" value="+92 300 0000000" class="font-mono text-slate-900 w-full mt-0.5">
                                 </div>
 
-          
+                                <div>
+                                    <p class="font-bold text-slate-800">Head Office:</p>
+                                    <textarea class="w-full text-[9px] text-slate-600 resize-none h-10 border-none outline-none mt-0.5" placeholder="Addr
