@@ -52,7 +52,6 @@
             border: 1px solid var(--border-color);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
             position: relative;
-            z-index: 10;
         }
 
         .header-top {
@@ -72,6 +71,7 @@
         .action-tools {
             display: flex;
             gap: 6px;
+            align-items: center;
         }
 
         .btn-tool {
@@ -86,8 +86,8 @@
             align-items: center;
             gap: 4px;
             font-weight: 600;
-            z-index: 20;
-            pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .btn-tool:active { background: var(--accent-blue); }
@@ -102,7 +102,6 @@
             outline: none;
             cursor: pointer;
             font-weight: 600;
-            z-index: 20;
         }
 
         .balance-title {
@@ -175,7 +174,6 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            z-index: 10;
         }
 
         .category-chips {
@@ -194,6 +192,7 @@
             white-space: nowrap;
             cursor: pointer;
             border: 1px solid transparent;
+            user-select: none;
         }
 
         .chip.active {
@@ -231,8 +230,8 @@
             padding: 12px;
             font-weight: 600;
             cursor: pointer;
-            z-index: 20;
-            pointer-events: auto;
+            user-select: none;
+            -webkit-user-select: none;
         }
 
         .btn-add {
@@ -240,6 +239,8 @@
             color: white;
             flex-grow: 1;
         }
+
+        .btn-add:active { background-color: var(--accent-hover); }
 
         .btn-mic {
             background-color: #334155;
@@ -309,7 +310,6 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-            position: relative;
         }
 
         .chat-header {
@@ -335,6 +335,7 @@
             cursor: pointer;
             font-size: 12px;
             margin-left: 8px;
+            padding: 2px 6px;
         }
 
         .empty-state {
@@ -349,14 +350,14 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            background: #2563EB;
+            background: var(--accent-blue);
             color: white;
             padding: 10px 20px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
             display: none;
-            z-index: 100;
+            z-index: 999;
             box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
     </style>
@@ -366,7 +367,7 @@
     <div id="toast" class="toast">Action Saved</div>
 
     <div class="app-container">
-        <!-- Top Header -->
+        <!-- Top Header Card -->
         <div class="header-card">
             <div class="header-top">
                 <div class="subtitle">Remaining Balance</div>
@@ -378,7 +379,7 @@
                         <option value="£">£ GBP</option>
                         <option value="₹">₹ INR</option>
                     </select>
-                    <button class="btn-tool" onclick="changeMonthlyBudget()">⚙️ Target</button>
+                    <button class="btn-tool" type="button" onclick="changeMonthlyBudget()">⚙️ Target</button>
                 </div>
             </div>
 
@@ -398,7 +399,7 @@
             </div>
         </div>
 
-        <!-- Expense Input Form -->
+        <!-- Expense Form Card -->
         <div class="form-card">
             <div class="category-chips">
                 <div class="chip active" onclick="selectChip(this, 'General')">🌐 General</div>
@@ -414,18 +415,18 @@
             </div>
 
             <div class="btn-group">
-                <button class="btn-mic" id="micBtn" onclick="toggleVoiceInput()" title="Voice Input">🎙️</button>
-                <button class="btn-add" onclick="addExpense()">+ Log Expense</button>
+                <button class="btn-mic" id="micBtn" type="button" onclick="toggleVoiceInput()" title="Voice Input">🎙️</button>
+                <button class="btn-add" type="button" onclick="addExpense()">+ Log Expense</button>
             </div>
         </div>
 
-        <!-- History -->
+        <!-- Log Stream Card -->
         <div class="history-card">
             <div class="history-header-row">
                 <span class="history-title">Cashflow Stream Log</span>
                 <div style="display: flex; gap: 6px;">
-                    <button class="btn-tool" onclick="exportToCSV()">📥 Export</button>
-                    <button class="btn-tool" onclick="clearAllData()" style="color: var(--danger-red);">🗑️ Reset</button>
+                    <button class="btn-tool" type="button" onclick="exportToCSV()">📥 Export</button>
+                    <button class="btn-tool" type="button" onclick="clearAllData()" style="color: var(--danger-red);">🗑️ Reset</button>
                 </div>
             </div>
             <div class="chat-list" id="chatList"></div>
@@ -438,10 +439,13 @@
         let transactions = JSON.parse(localStorage.getItem('smart_budget_data')) || [];
         let selectedCategory = 'General';
 
-        document.getElementById('currencySelect').value = selectedCurrency;
+        // Initialize currency selector dropdown
+        const currElem = document.getElementById('currencySelect');
+        if (currElem) currElem.value = selectedCurrency;
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
+            if (!toast) return;
             toast.innerText = msg;
             toast.style.display = 'block';
             setTimeout(() => { toast.style.display = 'none'; }, 2000);
@@ -456,7 +460,7 @@
         function changeCurrency() {
             selectedCurrency = document.getElementById('currencySelect').value;
             localStorage.setItem('smart_currency', selectedCurrency);
-            showToast("Currency Updated to " + selectedCurrency);
+            showToast("Currency set to " + selectedCurrency);
             updateUI();
         }
 
@@ -494,8 +498,9 @@
 
         function updateUI() {
             const chatElement = document.getElementById('chatList');
-            chatElement.innerHTML = '';
+            if (!chatElement) return;
 
+            chatElement.innerHTML = '';
             let totalSpent = 0;
 
             if (transactions.length === 0) {
@@ -524,19 +529,17 @@
                 });
             }
 
-            // Display Balance & Target in Selected Currency
+            // Calculations & UI Updates
             const remaining = monthlyBudget - totalSpent;
             document.getElementById('balanceDisplay').innerText = `${selectedCurrency}${remaining.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
             document.getElementById('targetBudgetDisplay').innerText = `${selectedCurrency}${monthlyBudget.toLocaleString('en-US')}`;
 
-            // Health Bar
             let healthPercent = (remaining / monthlyBudget) * 100;
             if (healthPercent < 0) healthPercent = 0;
 
             const healthBar = document.getElementById('healthBar');
-            healthBar.style.width = `${healthPercent}%`;
+            if (healthBar) healthBar.style.width = `${healthPercent}%`;
 
-            // Daily Limit
             const daysLeft = getDaysRemainingInMonth();
             const dailyRecommended = remaining > 0 ? (remaining / daysLeft) : 0;
             document.getElementById('dailyLimitText').innerText = `${selectedCurrency}${Math.round(dailyRecommended).toLocaleString()} / day`;
@@ -544,18 +547,20 @@
             const todaySpent = getTodaySpent();
             const statusBadge = document.getElementById('statusBadge');
 
-            if (remaining <= 0) {
-                healthBar.style.backgroundColor = 'var(--danger-red)';
-                statusBadge.className = 'warning-badge badge-danger';
-                statusBadge.innerText = '🔴 Exhausted';
-            } else if (todaySpent > dailyRecommended) {
-                healthBar.style.backgroundColor = 'var(--warning-yellow)';
-                statusBadge.className = 'warning-badge badge-warn';
-                statusBadge.innerText = '⚠️ Over Limit';
-            } else {
-                healthBar.style.backgroundColor = 'var(--success-green)';
-                statusBadge.className = 'warning-badge badge-safe';
-                statusBadge.innerText = '🟢 Safe Limit';
+            if (statusBadge && healthBar) {
+                if (remaining <= 0) {
+                    healthBar.style.backgroundColor = 'var(--danger-red)';
+                    statusBadge.className = 'warning-badge badge-danger';
+                    statusBadge.innerText = '🔴 Exhausted';
+                } else if (todaySpent > dailyRecommended) {
+                    healthBar.style.backgroundColor = 'var(--warning-yellow)';
+                    statusBadge.className = 'warning-badge badge-warn';
+                    statusBadge.innerText = '⚠️ Over Limit';
+                } else {
+                    healthBar.style.backgroundColor = 'var(--success-green)';
+                    statusBadge.className = 'warning-badge badge-safe';
+                    statusBadge.innerText = '🟢 Safe Limit';
+                }
             }
         }
 
@@ -577,18 +582,4 @@
                 amount: amount,
                 note: note,
                 rawDate: now.toLocaleDateString(),
-                time: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            };
-
-            transactions.push(newTransaction);
-            localStorage.setItem('smart_budget_data', JSON.stringify(transactions));
-
-            amountInput.value = '';
-            noteInput.value = '';
-
-            showToast("Expense Logged!");
-            updateUI();
-        }
-
-        function exportToCSV() {
-            if (tra
+                time: now.toLocaleTimeString([], { h
