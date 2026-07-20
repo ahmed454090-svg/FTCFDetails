@@ -3,217 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuCraft | Professional Document Generator</title>
+    <title>DocuCraft | Document Generator</title>
     
+    <!-- Local / Fallback Styles -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
-        body { background-color: #050505; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
         
-        #splash { 
-            position: fixed; inset: 0; z-index: 9999; 
-            background: linear-gradient(135deg, #0f172a 0%, #000000 100%); 
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: opacity 0.4s ease-in-out; 
-        }
-        
-        .circle-container { position: relative; width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }
-        .circle { position: absolute; border: 3px solid transparent; border-radius: 50%; animation: rotate 3s linear infinite; }
-        .circle-1 { width: 100%; height: 100%; border-top: 3px solid #f59e0b; }
-        .circle-2 { width: 80%; height: 80%; border-bottom: 3px solid #3b82f6; animation-direction: reverse; }
-        .brand-text { font-size: 1.5rem; font-weight: 800; color: #ffffff; letter-spacing: 2px; }
-        
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .typing-text { font-family: 'JetBrains Mono', monospace; color: #f59e0b; margin-top: 20px; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.1em; border-right: 2px solid #f59e0b; white-space: nowrap; animation: typing 2s steps(25, end), blink 0.75s step-end infinite; }
-        @keyframes typing { from { width: 0 } to { width: 22ch } }
-        @keyframes blink { from, to { border-color: transparent } 50% { border-color: #f59e0b } }
-        
-        /* 100% Working Tab Styles */
-        .tab-content { display: none !important; min-height: 100vh; padding-bottom: 120px; padding-top: 80px; }
-        .tab-content.active-tab-content { display: block !important; }
-        
-        .luxury-nav { background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .tab-btn { transition: all 0.3s ease; color: #94a3b8; cursor: pointer; border: none; background: transparent; outline: none; }
-        .tab-btn:hover { color: #ffffff; }
-        .active-btn { color: #f59e0b !important; transform: translateY(-3px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
-        .glass-card { background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #050505; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
 
+        /* Direct CSS Display Toggle (Faster & Independent of external JS) */
+        .tab-content { display: none !important; padding-top: 70px; padding-bottom: 100px; }
+        .tab-content.active { display: block !important; }
+
+        /* Fixed Navigation */
+        .nav-bar {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 90%; max-width: 450px; height: 60px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 20px; display: flex; justify-content: space-around;
+            align-items: center; z-index: 1000; backdrop-filter: blur(10px);
+        }
+
+        .nav-btn {
+            background: none; border: none; color: #64748b; font-size: 11px;
+            font-weight: 600; cursor: pointer; display: flex; flex-direction: column;
+            align-items: center; gap: 4px; width: 25%; height: 100%; justify-content: center;
+        }
+
+        .nav-btn.active-btn { color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+
+        /* Splash Screen Fix */
+        #splash {
+            position: fixed; inset: 0; z-index: 9000;
+            background: #090d16; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; pointer-events: none; /* Allows clicks through if stuck */
+        }
+
+        .card {
+            background: #121212; border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 20px; padding: 20px; margin: 0 auto 20px auto; max-width: 600px;
+        }
+
+        .print-area { background: #ffffff; color: #000; padding: 20px; border-radius: 12px; min-height: 300px; }
+        
         @media print {
             body * { visibility: hidden; }
             .printable, .printable * { visibility: visible; }
-            .printable { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; padding: 20px; }
-            .no-print { display: none !important; }
+            .printable { position: absolute; left: 0; top: 0; width: 100%; }
         }
     </style>
 
+    <!-- External Assets -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body class="text-slate-200">
+<body>
 
     <!-- Splash Screen -->
-    <div id="splash" onclick="document.getElementById('splash').style.display='none'">
-        <div class="circle-container">
-            <div class="circle circle-1"></div>
-            <div class="circle circle-2"></div>
-            <div class="brand-text">DOCU</div>
-        </div>
-        <div class="typing-text">INSTANT DOCUMENT HUB</div>
+    <div id="splash">
+        <h1 style="color:#f59e0b; font-size:24px; font-weight:800;">DOCUCRAFT</h1>
+        <p style="color:#64748b; font-size:12px; margin-top:5px;">Loading Workspace...</p>
     </div>
 
-    <!-- Top Utility Bar -->
-    <div class="fixed top-0 left-0 right-0 z-[60] h-14 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between no-print">
-        <div class="flex items-center gap-2">
-            <i class="fas fa-file-invoice text-amber-500 text-xl"></i>
-            <span class="font-bold tracking-wider text-white">DocuCraft</span>
-        </div>
-        
-        <div class="hidden md:flex text-xs text-slate-500 border border-dashed border-slate-700 px-4 py-1 rounded">
-            Ad Space (728x90 Banner)
-        </div>
-
-        <div class="flex gap-3">
-            <button onclick="openModal('info-modal')" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-amber-500 flex items-center justify-center transition"><i class="fas fa-info-circle"></i></button>
-        </div>
-    </div>
-
-    <!-- Modal -->
-    <div id="info-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md no-print">
-        <div class="glass-card p-6 rounded-3xl w-full max-w-md text-left">
-            <h2 class="text-white text-lg font-bold mb-3"><i class="fas fa-shield-alt text-amber-500 mr-2"></i>About & Privacy</h2>
-            <p class="text-xs text-slate-400 mb-4">DocuCraft is a free client-side generator tool. Your data stays on your device.</p>
-            <button onclick="closeModal('info-modal')" class="w-full py-2.5 bg-amber-500 rounded-xl text-black font-bold text-sm">Got it</button>
-        </div>
-    </div>
-
-    <main class="max-w-3xl mx-auto px-4">
-        
-        <!-- SECTION 1: INVOICE -->
-        <section id="sec-invoice" class="tab-content active-tab-content">
-            <div class="glass-card p-6 rounded-3xl shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-receipt mr-2"></i>Invoice Builder</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs"><i class="fas fa-print mr-1"></i> Print / PDF</button>
-                </div>
-                <div class="printable bg-white text-slate-900 p-6 rounded-xl min-h-[400px]">
-                    <h1 class="text-2xl font-extrabold text-slate-800 mb-4">INVOICE</h1>
-                    <div class="grid grid-cols-2 gap-4 text-xs">
-                        <div>
-                            <p class="font-bold">Billed To:</p>
-                            <input type="text" placeholder="Client Name" class="border-b w-full focus:outline-none">
-                        </div>
-                    </div>
+    <!-- MAIN CONTENT -->
+    <main style="padding: 20px;">
+        <!-- Tab 1 -->
+        <section id="invoice" class="tab-content active">
+            <div class="card">
+                <h2 style="color:#f59e0b; margin-bottom:15px;">Invoice Section</h2>
+                <div class="printable print-area">
+                    <h3>INVOICE FORM</h3>
+                    <p>Bill To: <input type="text" style="border-bottom:1px solid #000; outline:none;"></p>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 2: LETTERHEAD -->
-        <section id="sec-letterhead" class="tab-content">
-            <div class="glass-card p-6 rounded-3xl shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-file-alt mr-2"></i>Letterhead</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs"><i class="fas fa-print mr-1"></i> Print / PDF</button>
-                </div>
-                <div class="printable bg-white text-slate-900 p-6 rounded-xl min-h-[400px]">
-                    <h1 class="text-2xl font-extrabold text-slate-800 mb-4">ORGANIZATION</h1>
-                    <textarea class="w-full h-40 text-xs border p-2 focus:outline-none resize-none" placeholder="Type here..."></textarea>
+        <!-- Tab 2 -->
+        <section id="letterhead" class="tab-content">
+            <div class="card">
+                <h2 style="color:#f59e0b; margin-bottom:15px;">Letterhead Section</h2>
+                <div class="printable print-area">
+                    <h3>OFFICIAL LETTERHEAD</h3>
+                    <textarea style="width:100%; height:150px; margin-top:10px;" placeholder="Document body..."></textarea>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 3: RECEIPT -->
-        <section id="sec-receipt" class="tab-content">
-            <div class="glass-card p-6 rounded-3xl shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-money-check-alt mr-2"></i>Payment Receipt</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs"><i class="fas fa-print mr-1"></i> Print / PDF</button>
-                </div>
-                <div class="printable bg-white text-slate-900 p-6 rounded-xl min-h-[400px]">
-                    <h1 class="text-2xl font-extrabold text-slate-800 mb-4 border-b pb-2 text-center">CASH RECEIPT</h1>
-                    <div class="flex justify-between mt-4 text-sm">
-                        <span>Amount Paid:</span>
-                        <input type="text" placeholder="$0.00" class="border-b text-right focus:outline-none">
-                    </div>
+        <!-- Tab 3 -->
+        <section id="receipt" class="tab-content">
+            <div class="card">
+                <h2 style="color:#f59e0b; margin-bottom:15px;">Receipt Section</h2>
+                <div class="printable print-area">
+                    <h3>RECEIPT FORM</h3>
+                    <p>Amount: <input type="text" style="border-bottom:1px solid #000; outline:none;"></p>
                 </div>
             </div>
         </section>
 
-        <!-- SECTION 4: REGISTER -->
-        <section id="sec-register" class="tab-content">
-            <div class="glass-card p-6 rounded-3xl shadow-xl">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-id-card mr-2"></i>Registration Form</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs"><i class="fas fa-print mr-1"></i> Print / PDF</button>
-                </div>
-                <div class="printable bg-white text-slate-900 p-6 rounded-xl min-h-[400px]">
-                    <h1 class="text-2xl font-extrabold text-slate-800 mb-4 border-b pb-2 text-center">MEMBERSHIP FORM</h1>
-                    <div class="grid grid-cols-2 gap-4 text-xs">
-                        <div>
-                            <label>Full Name</label>
-                            <input type="text" class="border w-full p-2 mt-1 focus:outline-none">
-                        </div>
-                    </div>
+        <!-- Tab 4 -->
+        <section id="register" class="tab-content">
+            <div class="card">
+                <h2 style="color:#f59e0b; margin-bottom:15px;">Registration Section</h2>
+                <div class="printable print-area">
+                    <h3>REGISTRATION FORM</h3>
+                    <p>Member Name: <input type="text" style="border-bottom:1px solid #000; outline:none;"></p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Bottom Navigation Bar (Fixed for Click Events) -->
-    <nav class="fixed bottom-6 left-4 right-4 max-w-lg mx-auto luxury-nav rounded-2xl flex justify-around items-center z-[999] h-16 px-4 shadow-2xl border border-white/10 no-print">
-        
-        <button id="btn-invoice" class="tab-btn active-btn flex flex-col items-center w-full h-full justify-center" onclick="changeTab('invoice')">
-            <i class="fas fa-file-invoice text-lg pointer-events-none"></i>
-            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Invoice</span>
+    <!-- Bottom Navigation -->
+    <nav class="nav-bar">
+        <button class="nav-btn active-btn" onclick="openTab('invoice', this)">
+            <i class="fas fa-file-invoice" style="font-size:16px;"></i>
+            <span>Invoice</span>
         </button>
-
-        <button id="btn-letterhead" class="tab-btn flex flex-col items-center w-full h-full justify-center" onclick="changeTab('letterhead')">
-            <i class="fas fa-file-alt text-lg pointer-events-none"></i>
-            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Letterhead</span>
+        <button class="nav-btn" onclick="openTab('letterhead', this)">
+            <i class="fas fa-file-alt" style="font-size:16px;"></i>
+            <span>Letterhead</span>
         </button>
-
-        <button id="btn-receipt" class="tab-btn flex flex-col items-center w-full h-full justify-center" onclick="changeTab('receipt')">
-            <i class="fas fa-money-check-alt text-lg pointer-events-none"></i>
-            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Receipt</span>
+        <button class="nav-btn" onclick="openTab('receipt', this)">
+            <i class="fas fa-receipt" style="font-size:16px;"></i>
+            <span>Receipt</span>
         </button>
-
-        <button id="btn-register" class="tab-btn flex flex-col items-center w-full h-full justify-center" onclick="changeTab('register')">
-            <i class="fas fa-id-card text-lg pointer-events-none"></i>
-            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Register</span>
+        <button class="nav-btn" onclick="openTab('register', this)">
+            <i class="fas fa-id-card" style="font-size:16px;"></i>
+            <span>Register</span>
         </button>
-
     </nav>
 
-    <!-- Super Simple Switching Logic -->
     <script>
-        // Remove Splash
-        setTimeout(() => { document.getElementById('splash').style.display = 'none'; }, 1000);
+        // Force hide splash when DOM loads
+        window.addEventListener('DOMContentLoaded', function() {
+            var splash = document.getElementById('splash');
+            if(splash) splash.style.display = 'none';
+        });
 
-        // Core Tab Switching Logic
-        function changeTab(tabName) {
-            
-            // 1. Hide all sections
-            document.getElementById('sec-invoice').classList.remove('active-tab-content');
-            document.getElementById('sec-letterhead').classList.remove('active-tab-content');
-            document.getElementById('sec-receipt').classList.remove('active-tab-content');
-            document.getElementById('sec-register').classList.remove('active-tab-content');
+        // Fail-safe Tab Switching Function
+        function openTab(tabId, btnElement) {
+            try {
+                // 1. Hide all tabs
+                var tabs = document.querySelectorAll('.tab-content');
+                for (var i = 0; i < tabs.length; i++) {
+                    tabs[i].classList.remove('active');
+                }
 
-            // 2. Remove highlight from all buttons
-            document.getElementById('btn-invoice').classList.remove('active-btn');
-            document.getElementById('btn-letterhead').classList.remove('active-btn');
-            document.getElementById('btn-receipt').classList.remove('active-btn');
-            document.getElementById('btn-register').classList.remove('active-btn');
+                // 2. Remove active state from all buttons
+                var btns = document.querySelectorAll('.nav-btn');
+                for (var j = 0; j < btns.length; j++) {
+                    btns[j].classList.remove('active-btn');
+                }
 
-            // 3. Show clicked section & highlight button
-            document.getElementById('sec-' + tabName).classList.add('active-tab-content');
-            document.getElementById('btn-' + tabName).classList.add('active-btn');
+                // 3. Activate target tab and button
+                var targetTab = document.getElementById(tabId);
+                if (targetTab) {
+                    targetTab.classList.add('active');
+                }
 
-            // Optional Vibrate (mobile only)
-            if (navigator.vibrate) navigator.vibrate(15);
+                if (btnElement) {
+                    btnElement.classList.add('active-btn');
+                }
+            } catch (err) {
+                console.error("Tab switch error: ", err);
+            }
         }
-
-        // Modal Functions
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     </script>
 </body>
 </html>
