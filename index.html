@@ -38,8 +38,6 @@
         .tab-btn:hover { color: #ffffff; }
         .tab-btn.active-tab { color: #f59e0b !important; transform: translateY(-3px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
         .glass-card { background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        .glass-input { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; }
-        .glass-input:focus { border-color: #f59e0b; outline: none; }
 
         /* Printable Document View Styles */
         @media print {
@@ -309,18 +307,26 @@
         </button>
     </nav>
 
-    <!-- JavaScript logic -->
+    <!-- JavaScript Logic -->
     <script>
-        // Splash screen hiding logic
-        window.addEventListener('load', () => {
+        // Bulletproof Splash Screen Handler (Max 1.5 Seconds)
+        function hideSplash() {
             const splash = document.getElementById('splash');
-            setTimeout(() => {
+            if (splash && splash.style.display !== 'none') {
                 splash.style.opacity = '0';
-                setTimeout(() => { splash.style.display = 'none'; }, 800);
-            }, 1500);
-        });
+                setTimeout(() => { 
+                    splash.style.display = 'none'; 
+                }, 800);
+            }
+        }
+
+        // Window Load Event
+        window.addEventListener('load', hideSplash);
+
+        // Safety Backup (Forced hide after 1.5s if assets take time to load)
+        setTimeout(hideSplash, 1500);
 
         // Tab Switching Functionality
         function switchTab(tabId, btn) {
             if (navigator.vibrate) navigator.vibrate(15);
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.quer
