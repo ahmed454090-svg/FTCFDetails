@@ -35,7 +35,7 @@
 
         .tab-btn.active-btn { color: #f59e0b !important; transform: translateY(-2px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
 
-        /* Splash Screen Fix (Click through protection) */
+        /* Splash Screen */
         #splash {
             position: fixed; inset: 0; z-index: 9000;
             background: linear-gradient(135deg, #0f172a 0%, #000000 100%);
@@ -61,6 +61,28 @@
         }
 
         .border-line { border-bottom: 1px solid #cbd5e1; }
+
+        /* ID Card Specific Styles */
+        .id-card-wrapper {
+            display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 10px;
+        }
+
+        .id-card-front, .id-card-back {
+            width: 280px; height: 440px; border-radius: 16px; background: #ffffff;
+            border: 2px solid #1e293b; position: relative; overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column;
+        }
+
+        .id-card-header {
+            background: #0f172a; color: #ffffff; padding: 15px 10px; text-align: center;
+            border-bottom: 4px solid #f59e0b;
+        }
+
+        .id-photo-frame {
+            width: 90px; height: 100px; border-radius: 12px; border: 2px solid #f59e0b;
+            margin: 15px auto 10px auto; background: #f1f5f9; display: flex;
+            align-items: center; justify-content: center; overflow: hidden;
+        }
 
         @media print {
             body * { visibility: hidden; }
@@ -100,7 +122,6 @@
                     <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400"><i class="fas fa-print mr-1"></i> Print / PDF</button>
                 </div>
                 
-                <!-- Printable Invoice -->
                 <div class="printable print-area">
                     <div class="flex justify-between items-start border-b-2 border-slate-800 pb-4 mb-6">
                         <div>
@@ -126,7 +147,6 @@
                         </div>
                     </div>
 
-                    <!-- Items Table -->
                     <table class="w-full text-left text-xs mb-6">
                         <thead>
                             <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300">
@@ -181,7 +201,6 @@
                 </div>
                 
                 <div class="printable print-area">
-                    <!-- Left Aligned Header Header -->
                     <div class="flex items-start gap-4 border-b-2 border-slate-800 pb-4 mb-6">
                         <div>
                             <input type="text" value="ORGANIZATION NAME" class="text-2xl font-black text-slate-900 w-full uppercase tracking-wide">
@@ -190,16 +209,13 @@
                         </div>
                     </div>
 
-                    <!-- Date & Ref -->
                     <div class="flex justify-between text-xs text-slate-600 mb-6 font-mono">
                         <div>Ref No: <input type="text" value="FTCF/2026/____" class="border-line w-32"></div>
                         <div>Date: <input type="text" value="July 21, 2026" class="border-line w-32 text-right"></div>
                     </div>
 
-                    <!-- Letter Body -->
                     <textarea class="w-full h-64 text-xs text-slate-800 leading-relaxed border p-3 rounded focus:outline-none resize-none" placeholder="Type your official letter text here..."></textarea>
 
-                    <!-- Signature Area -->
                     <div class="mt-12 flex justify-between items-end text-xs">
                         <div>
                             <div class="border-b border-slate-400 w-40 mb-1"></div>
@@ -257,119 +273,70 @@
             </div>
         </section>
 
-        <!-- SECTION 4: MEMBERSHIP REGISTER -->
-        <section id="sec-register" class="tab-content">
+        <!-- SECTION 4: ID CARD BUILDER (NEW) -->
+        <section id="sec-idcard" class="tab-content">
             <div class="card">
                 <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-id-card mr-2"></i>Membership Form</h2>
+                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-id-badge mr-2"></i>Membership ID Card Builder</h2>
                     <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400"><i class="fas fa-print mr-1"></i> Print / PDF</button>
                 </div>
 
                 <div class="printable print-area">
-                    <div class="text-center border-b-2 border-slate-800 pb-3 mb-6">
-                        <input type="text" value="MEMBERSHIP REGISTRATION FORM" class="text-xl font-extrabold text-slate-900 text-center w-full">
-                    </div>
+                    <p class="text-center text-xs text-slate-400 mb-4 no-print">Click on any text below to edit details before printing</p>
+                    
+                    <div class="id-card-wrapper">
+                        
+                        <!-- CARD FRONT -->
+                        <div class="id-card-front">
+                            <div class="id-card-header">
+                                <input type="text" value="FOUNDATION NAME" class="text-xs font-black text-white text-center w-full uppercase tracking-wider">
+                                <input type="text" value="MEMBERSHIP CARD" class="text-[9px] text-amber-400 text-center w-full font-bold">
+                            </div>
 
-                    <div class="grid grid-cols-2 gap-4 text-xs text-slate-800 mb-4">
-                        <div>
-                            <label class="font-bold text-slate-700">Full Name:</label>
-                            <input type="text" class="border-line w-full py-1 mt-1 font-semibold">
+                            <div class="id-photo-frame">
+                                <i class="fas fa-user text-3xl text-slate-300"></i>
+                            </div>
+
+                            <div class="px-4 text-center">
+                                <input type="text" value="MEMBER FULL NAME" class="text-sm font-extrabold text-slate-900 text-center w-full">
+                                <input type="text" value="Executive Member / Volunteer" class="text-[10px] text-amber-600 font-bold text-center w-full mt-0.5">
+                            </div>
+
+                            <div class="px-4 mt-3 space-y-1 text-[10px] text-slate-700">
+                                <div class="flex justify-between border-b pb-0.5">
+                                    <span class="font-bold text-slate-500">ID No:</span>
+                                    <input type="text" value="FTCF-2026-08" class="text-right font-mono font-bold w-28">
+                                </div>
+                                <div class="flex justify-between border-b pb-0.5">
+                                    <span class="font-bold text-slate-500">CNIC:</span>
+                                    <input type="text" value="35202-0000000-0" class="text-right font-mono w-28">
+                                </div>
+                                <div class="flex justify-between border-b pb-0.5">
+                                    <span class="font-bold text-slate-500">Blood Group:</span>
+                                    <input type="text" value="B +ve" class="text-right font-bold text-red-600 w-28">
+                                </div>
+                            </div>
+
+                            <div class="mt-auto p-2 bg-slate-900 text-center">
+                                <input type="text" value="Valid Thru: Dec 2028" class="text-[9px] text-slate-300 text-center w-full font-mono">
+                            </div>
                         </div>
-                        <div>
-                            <label class="font-bold text-slate-700">CNIC / ID Number:</label>
-                            <input type="text" class="border-line w-full py-1 mt-1">
-                        </div>
-                        <div>
-                            <label class="font-bold text-slate-700">Phone Number:</label>
-                            <input type="text" class="border-line w-full py-1 mt-1">
-                        </div>
-                        <div>
-                            <label class="font-bold text-slate-700">Family Members Count:</label>
-                            <input type="text" placeholder="Family membro ki Tadat" class="border-line w-full py-1 mt-1">
-                        </div>
-                    </div>
 
-                    <div class="text-xs text-slate-800 mb-6">
-                        <label class="font-bold text-slate-700">Address:</label>
-                        <input type="text" class="border-line w-full py-1 mt-1">
-                    </div>
+                        <!-- CARD BACK -->
+                        <div class="id-card-back">
+                            <div class="id-card-header" style="padding: 10px 5px;">
+                                <span class="text-[10px] font-bold text-white uppercase">TERMS & EMERGENCY CONTACT</span>
+                            </div>
 
-                    <!-- Member Signature Line Only -->
-                    <div class="mt-16 flex justify-end text-xs">
-                        <div class="text-center">
-                            <div class="border-b border-slate-400 w-44 mb-1"></div>
-                            <span class="font-bold text-slate-800">Member Signature</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    </main>
+                            <div class="p-3 text-[9px] text-slate-600 space-y-2 flex-1">
+                                <p class="leading-tight">• This card is non-transferable and remains the property of the organization.</p>
+                                <p class="leading-tight">• If found, please return to the official head office address below.</p>
 
-    <!-- Bottom Navigation Bar -->
-    <nav class="luxury-nav no-print">
-        <button id="btn-invoice" class="tab-btn active-btn" onclick="switchTab('invoice', this)">
-            <i class="fas fa-file-invoice text-base"></i>
-            <span>Invoice</span>
-        </button>
+                                <div class="pt-2 border-t mt-2">
+                                    <p class="font-bold text-slate-800">Helpline / Emergency:</p>
+                                    <input type="text" value="+92 300 0000000" class="font-mono text-slate-900 w-full mt-0.5">
+                                </div>
 
-        <button id="btn-letterhead" class="tab-btn" onclick="switchTab('letterhead', this)">
-            <i class="fas fa-file-alt text-base"></i>
-            <span>Letterhead</span>
-        </button>
-
-        <button id="btn-receipt" class="tab-btn" onclick="switchTab('receipt', this)">
-            <i class="fas fa-money-check-alt text-base"></i>
-            <span>Receipt</span>
-        </button>
-
-        <button id="btn-register" class="tab-btn" onclick="switchTab('register', this)">
-            <i class="fas fa-id-card text-base"></i>
-            <span>Register</span>
-        </button>
-    </nav>
-
-    <!-- Fast & Safe JavaScript -->
-    <script>
-        // Automatic hide splash on page load
-        window.addEventListener('DOMContentLoaded', function() {
-            var splash = document.getElementById('splash');
-            if (splash) {
-                splash.style.opacity = '0';
-                setTimeout(function() { splash.style.display = 'none'; }, 400);
-            }
-        });
-
-        // Fail-safe Tab Switching Function
-        function switchTab(tabKey, btnEl) {
-            try {
-                // Hide all sections
-                var sections = document.querySelectorAll('.tab-content');
-                for (var i = 0; i < sections.length; i++) {
-                    sections[i].classList.remove('active');
-                }
-
-                // Remove highlight from all buttons
-                var buttons = document.querySelectorAll('.tab-btn');
-                for (var j = 0; j < buttons.length; j++) {
-                    buttons[j].classList.remove('active-btn');
-                }
-
-                // Activate target section & button
-                var targetSec = document.getElementById('sec-' + tabKey);
-                if (targetSec) {
-                    targetSec.classList.add('active');
-                }
-
-                if (btnEl) {
-                    btnEl.classList.add('active-btn');
-                }
-
-                if (navigator.vibrate) navigator.vibrate(10);
-            } catch (err) {
-                console.error("Tab switch error: ", err);
-            }
-        }
-    </script>
-</body>
-</html>
+                                <div>
+                                    <p class="font-bold text-slate-800">Head Office:</p>
+                                    <textarea class="w-full text-[9px] text-slate-600 resize-none h-10 border-none outline-none mt-0.5" placeholder=
