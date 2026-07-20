@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#0F172A">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Smart Budget - Global Micro Cashflow Manager</title>
+    <title>Smart Budget - NextGen Cashflow</title>
     <style>
         :root {
             --bg-color: #0F172A;
@@ -19,14 +17,13 @@
             --success-green: #22C55E;
             --warning-yellow: #EAB308;
             --danger-red: #EF4444;
-            --chat-bubble: #1E293B;
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -45,6 +42,7 @@
             display: flex;
             flex-direction: column;
             gap: 16px;
+            position: relative;
         }
 
         .header-card {
@@ -53,6 +51,8 @@
             padding: 20px;
             border: 1px solid var(--border-color);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 10;
         }
 
         .header-top {
@@ -78,37 +78,45 @@
             background: #334155;
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            padding: 5px 10px;
+            padding: 6px 12px;
             border-radius: 8px;
             font-size: 11px;
             cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 4px;
-            transition: background 0.2s;
+            font-weight: 600;
+            z-index: 20;
+            pointer-events: auto;
         }
 
-        .btn-tool:active {
-            background: var(--accent-blue);
-        }
+        .btn-tool:active { background: var(--accent-blue); }
 
         .currency-select {
             background: #334155;
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            padding: 4px 6px;
+            padding: 6px;
             border-radius: 8px;
             font-size: 11px;
             outline: none;
             cursor: pointer;
+            font-weight: 600;
+            z-index: 20;
         }
 
         .balance-title {
             font-size: 32px;
             font-weight: 800;
-            margin: 10px 0 14px 0;
+            margin: 10px 0 6px 0;
             color: var(--text-primary);
             letter-spacing: -0.5px;
+        }
+
+        .budget-target-sub {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 14px;
         }
 
         .progress-bar-bg {
@@ -123,10 +131,9 @@
             height: 100%;
             width: 100%;
             background-color: var(--success-green);
-            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.4s ease;
+            transition: width 0.4s ease, background-color 0.4s ease;
         }
 
-        /* Daily Limit Warning Banner */
         .limit-card {
             background: rgba(15, 23, 42, 0.6);
             border: 1px dashed var(--border-color);
@@ -154,7 +161,6 @@
             padding: 5px 10px;
             border-radius: 20px;
             font-weight: 600;
-            letter-spacing: 0.2px;
         }
 
         .badge-safe { background: rgba(34, 197, 94, 0.15); color: var(--success-green); border: 1px solid rgba(34, 197, 94, 0.3); }
@@ -168,8 +174,31 @@
             border: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            gap: 12px;
+            z-index: 10;
+        }
+
+        .category-chips {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .chip {
+            background: #334155;
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            white-space: nowrap;
+            cursor: pointer;
+            border: 1px solid transparent;
+        }
+
+        .chip.active {
+            background: var(--accent-blue);
+            color: white;
         }
 
         .input-row {
@@ -185,13 +214,9 @@
             color: var(--text-primary);
             font-size: 14px;
             outline: none;
-            transition: border-color 0.2s;
         }
 
-        input:focus {
-            border-color: var(--accent-blue);
-        }
-
+        input:focus { border-color: var(--accent-blue); }
         .amount-field { width: 40%; }
         .note-field { width: 60%; }
 
@@ -206,17 +231,14 @@
             padding: 12px;
             font-weight: 600;
             cursor: pointer;
-            transition: background-color 0.2s, opacity 0.2s;
+            z-index: 20;
+            pointer-events: auto;
         }
 
         .btn-add {
             background-color: var(--accent-blue);
             color: white;
             flex-grow: 1;
-        }
-
-        .btn-add:hover {
-            background-color: var(--accent-hover);
         }
 
         .btn-mic {
@@ -240,7 +262,6 @@
             100% { opacity: 1; }
         }
 
-        /* WhatsApp Style Chat Logs */
         .history-card {
             background-color: var(--bg-color);
             border-radius: 20px;
@@ -271,7 +292,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            max-height: 380px;
+            max-height: 360px;
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -288,12 +309,7 @@
             display: flex;
             flex-direction: column;
             gap: 4px;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            position: relative;
         }
 
         .chat-header {
@@ -303,28 +319,23 @@
             align-items: center;
         }
 
-        .chat-note {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--text-primary);
-        }
-
-        .chat-amount {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--danger-red);
-        }
+        .chat-note { font-size: 14px; font-weight: 500; }
+        .chat-amount { font-size: 15px; font-weight: 700; color: var(--danger-red); }
 
         .chat-footer {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-between;
             align-items: center;
-            gap: 4px;
             font-size: 10px;
             color: var(--text-secondary);
         }
 
-        .ticks { color: #38BDF8; font-size: 12px; }
+        .btn-del-item {
+            color: var(--danger-red);
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 8px;
+        }
 
         .empty-state {
             text-align: center;
@@ -332,35 +343,55 @@
             font-size: 13px;
             padding: 30px 0;
         }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2563EB;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: none;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
     </style>
 </head>
 <body>
 
+    <div id="toast" class="toast">Action Saved</div>
+
     <div class="app-container">
-        <!-- Top Budget Header -->
+        <!-- Top Header -->
         <div class="header-card">
             <div class="header-top">
-                <div class="subtitle">Remaining Monthly Budget</div>
+                <div class="subtitle">Remaining Balance</div>
                 <div class="action-tools">
                     <select class="currency-select" id="currencySelect" onchange="changeCurrency()">
                         <option value="Rs. ">PKR (Rs.)</option>
-                        <option value="$">USD ($)</option>
-                        <option value="€">EUR (€)</option>
-                        <option value="£">GBP (£)</option>
-                        <option value="₹">INR (₹)</option>
+                        <option value="$">$ USD</option>
+                        <option value="€">€ EUR</option>
+                        <option value="£">£ GBP</option>
+                        <option value="₹">₹ INR</option>
                     </select>
                     <button class="btn-tool" onclick="changeMonthlyBudget()">⚙️ Target</button>
                 </div>
             </div>
+
             <div class="balance-title" id="balanceDisplay">Rs. 0.00</div>
+            <div class="budget-target-sub">Monthly Target: <span id="targetBudgetDisplay">Rs. 50,000</span></div>
+
             <div class="progress-bar-bg">
                 <div class="progress-bar-fill" id="healthBar"></div>
             </div>
 
-            <!-- Daily Limit & Warning System -->
             <div class="limit-card">
                 <div class="limit-info">
-                    <span style="font-size: 11px; color: var(--text-secondary);">Today's Recommended Limit</span>
+                    <span style="font-size: 11px; color: var(--text-secondary);">Daily Recommended Limit</span>
                     <span class="limit-amount" id="dailyLimitText">Rs. 0 / day</span>
                 </div>
                 <div id="statusBadge" class="warning-badge badge-safe">🟢 Safe</div>
@@ -369,28 +400,35 @@
 
         <!-- Expense Input Form -->
         <div class="form-card">
+            <div class="category-chips">
+                <div class="chip active" onclick="selectChip(this, 'General')">🌐 General</div>
+                <div class="chip" onclick="selectChip(this, 'Food 🍕')">Food 🍕</div>
+                <div class="chip" onclick="selectChip(this, 'Fuel ⛽')">Fuel ⛽</div>
+                <div class="chip" onclick="selectChip(this, 'Bills 💡')">Bills 💡</div>
+                <div class="chip" onclick="selectChip(this, 'Shopping 🛍️')">Shopping 🛍️</div>
+            </div>
+
             <div class="input-row">
                 <input type="number" id="amountInput" class="amount-field" placeholder="Amount">
-                <input type="text" id="noteInput" class="note-field" placeholder="Note (e.g. Petrol)">
+                <input type="text" id="noteInput" class="note-field" placeholder="Note / Details">
             </div>
+
             <div class="btn-group">
-                <button class="btn-mic" id="micBtn" onclick="toggleVoiceInput()" title="Voice Entry">🎙️</button>
-                <button class="btn-add" onclick="addExpense()">+ Add Expense</button>
+                <button class="btn-mic" id="micBtn" onclick="toggleVoiceInput()" title="Voice Input">🎙️</button>
+                <button class="btn-add" onclick="addExpense()">+ Log Expense</button>
             </div>
         </div>
 
-        <!-- WhatsApp Style Log -->
+        <!-- History -->
         <div class="history-card">
             <div class="history-header-row">
                 <span class="history-title">Cashflow Stream Log</span>
                 <div style="display: flex; gap: 6px;">
-                    <button class="btn-tool" onclick="exportToCSV()" title="Export CSV Data">📥 Export</button>
-                    <button class="btn-tool" onclick="clearAllData()" style="color: var(--danger-red);" title="Clear All">🗑️ Clear</button>
+                    <button class="btn-tool" onclick="exportToCSV()">📥 Export</button>
+                    <button class="btn-tool" onclick="clearAllData()" style="color: var(--danger-red);">🗑️ Reset</button>
                 </div>
             </div>
-            <div class="chat-list" id="chatList">
-                <!-- Chat Bubbles rendered here -->
-            </div>
+            <div class="chat-list" id="chatList"></div>
         </div>
     </div>
 
@@ -398,21 +436,36 @@
         let selectedCurrency = localStorage.getItem('smart_currency') || 'Rs. ';
         let monthlyBudget = parseFloat(localStorage.getItem('smart_monthly_budget')) || 50000;
         let transactions = JSON.parse(localStorage.getItem('smart_budget_data')) || [];
+        let selectedCategory = 'General';
 
-        // Set initial selector value
         document.getElementById('currencySelect').value = selectedCurrency;
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2000);
+        }
+
+        function selectChip(el, category) {
+            document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            selectedCategory = category;
+        }
 
         function changeCurrency() {
             selectedCurrency = document.getElementById('currencySelect').value;
             localStorage.setItem('smart_currency', selectedCurrency);
+            showToast("Currency Updated to " + selectedCurrency);
             updateUI();
         }
 
         function changeMonthlyBudget() {
-            const newBudget = prompt("Set Your Monthly Budget Target:", monthlyBudget);
+            const newBudget = prompt("Set Your Monthly Target Budget:", monthlyBudget);
             if (newBudget !== null && !isNaN(parseFloat(newBudget)) && parseFloat(newBudget) > 0) {
                 monthlyBudget = parseFloat(newBudget);
                 localStorage.setItem('smart_monthly_budget', monthlyBudget);
+                showToast("Budget Target Updated!");
                 updateUI();
             }
         }
@@ -430,6 +483,15 @@
                 .reduce((sum, t) => sum + parseFloat(t.amount), 0);
         }
 
+        function deleteItem(index) {
+            if (confirm("Delete this expense entry?")) {
+                transactions.splice(index, 1);
+                localStorage.setItem('smart_budget_data', JSON.stringify(transactions));
+                showToast("Entry Deleted");
+                updateUI();
+            }
+        }
+
         function updateUI() {
             const chatElement = document.getElementById('chatList');
             chatElement.innerHTML = '';
@@ -439,7 +501,8 @@
             if (transactions.length === 0) {
                 chatElement.innerHTML = '<div class="empty-state">No expense logs yet. Add or speak your entry!</div>';
             } else {
-                transactions.slice().reverse().forEach((item) => {
+                transactions.slice().reverse().forEach((item, revIdx) => {
+                    const actualIdx = transactions.length - 1 - revIdx;
                     totalSpent += parseFloat(item.amount);
 
                     const bubble = document.createElement('div');
@@ -451,25 +514,29 @@
                         </div>
                         <div class="chat-footer">
                             <span>${item.time}</span>
-                            <span class="ticks">✓✓</span>
+                            <div>
+                                <span style="color: #38BDF8;">✓✓</span>
+                                <span class="btn-del-item" onclick="deleteItem(${actualIdx})">🗑️</span>
+                            </div>
                         </div>
                     `;
                     chatElement.appendChild(bubble);
                 });
             }
 
-            // Calculations
+            // Display Balance & Target in Selected Currency
             const remaining = monthlyBudget - totalSpent;
             document.getElementById('balanceDisplay').innerText = `${selectedCurrency}${remaining.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('targetBudgetDisplay').innerText = `${selectedCurrency}${monthlyBudget.toLocaleString('en-US')}`;
 
-            // Health Bar Math
+            // Health Bar
             let healthPercent = (remaining / monthlyBudget) * 100;
             if (healthPercent < 0) healthPercent = 0;
 
             const healthBar = document.getElementById('healthBar');
             healthBar.style.width = `${healthPercent}%`;
 
-            // Daily Limit Warning Logic
+            // Daily Limit
             const daysLeft = getDaysRemainingInMonth();
             const dailyRecommended = remaining > 0 ? (remaining / daysLeft) : 0;
             document.getElementById('dailyLimitText').innerText = `${selectedCurrency}${Math.round(dailyRecommended).toLocaleString()} / day`;
@@ -480,11 +547,11 @@
             if (remaining <= 0) {
                 healthBar.style.backgroundColor = 'var(--danger-red)';
                 statusBadge.className = 'warning-badge badge-danger';
-                statusBadge.innerText = '🔴 Budget Exhausted';
+                statusBadge.innerText = '🔴 Exhausted';
             } else if (todaySpent > dailyRecommended) {
                 healthBar.style.backgroundColor = 'var(--warning-yellow)';
                 statusBadge.className = 'warning-badge badge-warn';
-                statusBadge.innerText = '⚠️ Over Daily Limit';
+                statusBadge.innerText = '⚠️ Over Limit';
             } else {
                 healthBar.style.backgroundColor = 'var(--success-green)';
                 statusBadge.className = 'warning-badge badge-safe';
@@ -497,7 +564,8 @@
             const noteInput = document.getElementById('noteInput');
 
             const amount = parseFloat(amountInput.value);
-            const note = noteInput.value.trim() || 'General Expense';
+            let note = noteInput.value.trim();
+            if (!note) note = selectedCategory;
 
             if (isNaN(amount) || amount <= 0) {
                 alert('Please enter a valid amount!');
@@ -518,72 +586,9 @@
             amountInput.value = '';
             noteInput.value = '';
 
+            showToast("Expense Logged!");
             updateUI();
         }
 
-        // CSV Export Feature
         function exportToCSV() {
-            if (transactions.length === 0) {
-                alert("No transactions to export!");
-                return;
-            }
-            let csvContent = "data:text/csv;charset=utf-8,Date,Time,Note,Amount (" + selectedCurrency + ")\n";
-            transactions.forEach(t => {
-                csvContent += `"${t.rawDate}","${t.time}","${t.note}",${t.amount}\n`;
-            });
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "cashflow_report.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Clear Data Feature
-        function clearAllData() {
-            if (confirm("Are you sure you want to clear all transactions? This cannot be undone.")) {
-                transactions = [];
-                localStorage.removeItem('smart_budget_data');
-                updateUI();
-            }
-        }
-
-        // 🎙️ Voice Recognition Engine
-        let recognition;
-        function toggleVoiceInput() {
-            const micBtn = document.getElementById('micBtn');
-
-            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-                alert('Voice Input is not supported on this browser. Try Chrome or Safari.');
-                return;
-            }
-
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            
-            if (micBtn.classList.contains('listening')) {
-                recognition.stop();
-                micBtn.classList.remove('listening');
-                return;
-            }
-
-            recognition = new SpeechRecognition();
-            recognition.lang = 'en-US';
-            recognition.interimResults = false;
-
-            recognition.onstart = function() {
-                micBtn.classList.add('listening');
-            };
-
-            recognition.onresult = function(event) {
-                const speechText = event.results[0][0].transcript;
-                micBtn.classList.remove('listening');
-                parseVoiceInput(speechText);
-            };
-
-            recognition.onerror = function() {
-                micBtn.classList.remove('listening');
-                alert('Could not recognize voice. Please try again.');
-            };
-
-            recognition.onend = fu
+            if (tra
