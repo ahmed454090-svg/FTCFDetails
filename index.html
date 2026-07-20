@@ -3,342 +3,305 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuCraft | Document Generator</title>
-    
+    <title>Smart Budget - Micro Cashflow Manager</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #050505; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-
-        /* Absolute Fail-Safe Splash Screen Animation */
-        @keyframes fadeAndHide {
-            0% { opacity: 1; visibility: visible; }
-            70% { opacity: 1; visibility: visible; }
-            99% { opacity: 0; visibility: visible; }
-            100% { opacity: 0; visibility: hidden; display: none !important; pointer-events: none !important; }
+        :root {
+            --bg-color: #0F172A;
+            --card-bg: #1E293B;
+            --accent-blue: #2563EB;
+            --text-primary: #FFFFFF;
+            --text-secondary: #94A3B8;
+            --border-color: #334155;
+            --success-green: #22C55E;
+            --warning-yellow: #EAB308;
+            --danger-red: #EF4444;
         }
 
-        #splash {
-            position: fixed; inset: 0; z-index: 99999;
-            background: linear-gradient(135deg, #0f172a 0%, #000000 100%);
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            pointer-events: none !important;
-            animation: fadeAndHide 0.8s forwards ease-out;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
 
-        /* Direct CSS Tab Display Control */
-        .tab-content { display: none !important; padding-top: 70px; padding-bottom: 120px; }
-        .tab-content.active { display: block !important; }
-
-        /* Navigation Bar */
-        .luxury-nav {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 92%; max-width: 480px; height: 64px;
-            background: rgba(15, 15, 15, 0.95);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 20px; display: flex; justify-content: space-around;
-            align-items: center; z-index: 1000; backdrop-filter: blur(15px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            display: flex;
+            justify-content: center;
+            padding: 16px;
+            min-height: 100vh;
         }
 
-        .tab-btn {
-            background: none; border: none; color: #94a3b8; font-size: 10px;
-            font-weight: 600; cursor: pointer; display: flex; flex-direction: column;
-            align-items: center; justify-content: center; width: 25%; height: 100%;
-            gap: 4px; transition: all 0.2s ease;
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .tab-btn.active-btn { color: #f59e0b !important; transform: translateY(-2px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-
-        .card {
-            background: rgba(18, 18, 18, 0.95); border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 24px; padding: 24px; margin: 0 auto; max-width: 680px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        .header-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Printable Sheet Styling */
-        .print-area { 
-            background: #ffffff; color: #0f172a; padding: 30px; border-radius: 12px; 
-            min-height: 480px; font-family: 'Inter', sans-serif;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
-        }
-        
-        .print-area input, .print-area textarea {
-            background: transparent; border: none; outline: none; font-family: inherit;
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        .border-line { border-bottom: 1px solid #cbd5e1; }
-
-        /* ID Card Specific Styles */
-        .id-card-wrapper {
-            display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 10px;
+        .balance-title {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 8px 0 16px 0;
+            color: var(--text-primary);
         }
 
-        .id-card-front, .id-card-back {
-            width: 280px; height: 440px; border-radius: 16px; background: #ffffff;
-            border: 2px solid #1e293b; position: relative; overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column;
+        .progress-bar-bg {
+            background-color: var(--border-color);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 8px;
         }
 
-        .id-card-header {
-            background: #0f172a; color: #ffffff; padding: 15px 10px; text-align: center;
-            border-bottom: 4px solid #f59e0b;
+        .progress-bar-fill {
+            height: 100%;
+            width: 100%;
+            background-color: var(--success-green);
+            transition: width 0.4s ease, background-color 0.4s ease;
         }
 
-        .id-photo-frame {
-            width: 90px; height: 100px; border-radius: 12px; border: 2px solid #f59e0b;
-            margin: 15px auto 10px auto; background: #f1f5f9; display: flex;
-            align-items: center; justify-content: center; overflow: hidden; font-size: 28px; color: #94a3b8;
+        .status-badge {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--success-green);
         }
 
-        @media print {
-            body * { visibility: hidden; }
-            .printable, .printable * { visibility: visible; }
-            .printable { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; padding: 20px; }
-            .no-print { display: none !important; }
+        .form-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input {
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            color: var(--text-primary);
+            font-size: 15px;
+            width: 100%;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: var(--accent-blue);
+        }
+
+        button {
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        button:active {
+            opacity: 0.8;
+        }
+
+        .history-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .history-title {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .transaction-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .item-note {
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .item-date {
+            font-size: 11px;
+            color: var(--text-secondary);
+        }
+
+        .item-amount {
+            color: var(--danger-red);
+            font-weight: 700;
+            font-size: 15px;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 13px;
+            padding: 20px 0;
         }
     </style>
-
-    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
 
-    <!-- Splash Screen (Self-Destroying) -->
-    <div id="splash">
-        <h1 style="color:#ffffff; font-size:22px; font-weight:800; letter-spacing: 2px;">DOCU<span style="color:#f59e0b;">CRAFT</span></h1>
-        <p style="color:#f59e0b; font-size:11px; margin-top:6px; font-weight: 600;">LOADING WORKSPACE...</p>
-    </div>
-
-    <!-- Top Bar -->
-    <div class="fixed top-0 left-0 right-0 z-[60] h-14 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between no-print">
-        <div class="flex items-center gap-2">
-            <span class="text-amber-500 font-black text-lg">📄</span>
-            <span class="font-bold tracking-wider text-white">DocuCraft</span>
+    <div class="app-container">
+        <!-- Top Budget Header -->
+        <div class="header-card">
+            <div class="subtitle">Remaining Monthly Budget</div>
+            <div class="balance-title" id="balanceDisplay">Rs. 50,000.00</div>
+            <div class="progress-bar-bg">
+                <div class="progress-bar-fill" id="healthBar"></div>
+            </div>
+            <div class="status-badge" id="statusText">🟢 Budget Safe Zone</div>
         </div>
-        <div class="text-xs text-slate-400 font-semibold">Document Generator</div>
+
+        <!-- Expense Input Form -->
+        <div class="form-card">
+            <div class="input-row">
+                <input type="number" id="amountInput" placeholder="Amount (e.g. 500)" id="amountInput">
+                <input type="text" id="noteInput" placeholder="Note (Petrol, Lunch)">
+            </div>
+            <button onclick="addExpense()">+ Add Expense</button>
+        </div>
+
+        <!-- Recent Cashflow History -->
+        <div class="history-card">
+            <div class="history-title">Recent Transactions</div>
+            <ul class="transaction-list" id="transactionList">
+                <!-- Data will be loaded dynamically -->
+            </ul>
+        </div>
     </div>
 
-    <main class="max-w-3xl mx-auto px-4">
-        
-        <!-- SECTION 1: INVOICE -->
-        <section id="sec-invoice" class="tab-content active">
-            <div class="card">
-                <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500">📄 Invoice Builder</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
-                </div>
-                
-                <div class="printable print-area">
-                    <div class="flex justify-between items-start border-b-2 border-slate-800 pb-4 mb-6">
+    <script>
+        const MONTHLY_BUDGET = 50000;
+        let transactions = JSON.parse(localStorage.getItem('smart_budget_data')) || [];
+
+        function updateUI() {
+            const listElement = document.getElementById('transactionList');
+            listElement.innerHTML = '';
+
+            let totalSpent = 0;
+
+            if (transactions.length === 0) {
+                listElement.innerHTML = '<div class="empty-state">No transactions yet. Add your first expense above!</div>';
+            } else {
+                transactions.slice().reverse().forEach((item) => {
+                    totalSpent += parseFloat(item.amount);
+
+                    const li = document.createElement('li');
+                    li.className = 'transaction-item';
+                    li.innerHTML = `
                         <div>
-                            <input type="text" value="COMPANY / ORGANIZATION NAME" class="text-xl font-extrabold text-slate-900 w-full mb-1">
-                            <input type="text" placeholder="Address, City, Phone" class="text-xs text-slate-500 w-full">
+                            <div class="item-note">${item.note}</div>
+                            <div class="item-date">${item.date}</div>
                         </div>
-                        <div class="text-right">
-                            <h1 class="text-2xl font-black text-amber-600 tracking-wider">INVOICE</h1>
-                            <input type="text" value="#INV-2026-001" class="text-xs font-mono text-right text-slate-500 w-full">
-                        </div>
-                    </div>
+                        <div class="item-amount">- Rs. ${parseFloat(item.amount).toFixed(2)}</div>
+                    `;
+                    listElement.appendChild(li);
+                });
+            }
 
-                    <div class="grid grid-cols-2 gap-6 text-xs mb-6">
-                        <div>
-                            <p class="font-bold text-slate-700 mb-1">Billed To:</p>
-                            <input type="text" placeholder="Client Name / Organization" class="border-line w-full py-1 text-slate-900 font-semibold">
-                            <input type="text" placeholder="Client Address / Contact" class="border-line w-full py-1 text-slate-600 mt-1">
-                        </div>
-                        <div class="text-right">
-                            <p class="font-bold text-slate-700 mb-1">Date & Terms:</p>
-                            <input type="text" value="Date: July 21, 2026" class="border-line w-full py-1 text-right text-slate-800">
-                            <input type="text" value="Due Date: On Receipt" class="border-line w-full py-1 text-right text-slate-800 mt-1">
-                        </div>
-                    </div>
+            // Calculations
+            const remaining = MONTHLY_BUDGET - totalSpent;
+            document.getElementById('balanceDisplay').innerText = `Rs. ${remaining.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
 
-                    <table class="w-full text-left text-xs mb-6">
-                        <thead>
-                            <tr class="bg-slate-100 text-slate-700 font-bold border-b border-slate-300">
-                                <th class="p-2">Description</th>
-                                <th class="p-2 text-center">Qty</th>
-                                <th class="p-2 text-right">Price</th>
-                                <th class="p-2 text-right">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invoice-rows" class="divide-y divide-slate-200">
-                            <tr>
-                                <td class="p-2"><input type="text" value="Service Description / Item 1" class="w-full"></td>
-                                <td class="p-2 text-center"><input type="number" value="1" oninput="calculateTotal()" class="qty w-12 text-center border-b border-slate-300 outline-none"></td>
-                                <td class="p-2 text-right"><input type="number" value="0.00" oninput="calculateTotal()" class="price w-16 text-right border-b border-slate-300 outline-none"></td>
-                                <td class="p-2 text-right font-bold row-total">$0.00</td>
-                            </tr>
-                            <tr>
-                                <td class="p-2"><input type="text" value="Service Description / Item 2" class="w-full"></td>
-                                <td class="p-2 text-center"><input type="number" value="1" oninput="calculateTotal()" class="qty w-12 text-center border-b border-slate-300 outline-none"></td>
-                                <td class="p-2 text-right"><input type="number" value="0.00" oninput="calculateTotal()" class="price w-16 text-right border-b border-slate-300 outline-none"></td>
-                                <td class="p-2 text-right font-bold row-total">$0.00</td>
-                            </tr>
-                        </tbody>
-                    </table>
+            // Health Bar Math
+            let healthPercent = ((remaining) / MONTHLY_BUDGET) * 100;
+            if (healthPercent < 0) healthPercent = 0;
 
-                    <div class="flex justify-end text-xs mb-8">
-                        <div class="w-1/2 space-y-2">
-                            <div class="flex justify-between border-b pb-1">
-                                <span class="text-slate-600">Subtotal:</span>
-                                <span id="subtotal-display" class="font-bold">$0.00</span>
-                            </div>
-                            <div class="flex justify-between border-b pb-1 text-amber-700 font-extrabold text-sm">
-                                <span>Grand Total:</span>
-                                <span id="grand-total-display">$0.00</span>
-                            </div>
-                        </div>
-                    </div>
+            const healthBar = document.getElementById('healthBar');
+            const statusText = document.getElementById('statusText');
 
-                    <div class="border-t pt-4 text-[10px] text-slate-400 text-center">
-                        Thank you for your business!
-                    </div>
-                </div>
-            </div>
-        </section>
+            healthBar.style.width = `${healthPercent}%`;
 
-        <!-- SECTION 2: LETTERHEAD -->
-        <section id="sec-letterhead" class="tab-content">
-            <div class="card">
-                <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500">📝 Official Letterhead</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
-                </div>
-                
-                <div class="printable print-area">
-                    <div class="flex items-start gap-4 border-b-2 border-slate-800 pb-4 mb-6">
-                        <div>
-                            <input type="text" value="ORGANIZATION NAME" class="text-2xl font-black text-slate-900 w-full uppercase tracking-wide">
-                            <input type="text" value="Tagline / Official Subtitle Here" class="text-xs text-amber-600 font-semibold w-full mt-0.5">
-                            <input type="text" value="Contact: +92 300 0000000 | Email: info@org.com" class="text-[11px] text-slate-500 w-full mt-1">
-                        </div>
-                    </div>
+            if (healthPercent >= 60) {
+                healthBar.style.backgroundColor = 'var(--success-green)';
+                statusText.innerText = '🟢 Budget Safe Zone';
+                statusText.style.color = 'var(--success-green)';
+            } else if (healthPercent >= 25) {
+                healthBar.style.backgroundColor = 'var(--warning-yellow)';
+                statusText.innerText = '🟡 Warning: Control Spending';
+                statusText.style.color = 'var(--warning-yellow)';
+            } else {
+                healthBar.style.backgroundColor = 'var(--danger-red)';
+                statusText.innerText = '🔴 Critical: Budget Low';
+                statusText.style.color = 'var(--danger-red)';
+            }
+        }
 
-                    <div class="flex justify-between text-xs text-slate-600 mb-6 font-mono">
-                        <div>Ref No: <input type="text" value="FTCF/2026/____" class="border-line w-32"></div>
-                        <div>Date: <input type="text" value="July 21, 2026" class="border-line w-32 text-right"></div>
-                    </div>
+        function addExpense() {
+            const amountInput = document.getElementById('amountInput');
+            const noteInput = document.getElementById('noteInput');
 
-                    <textarea class="w-full h-64 text-xs text-slate-800 leading-relaxed border p-3 rounded focus:outline-none resize-none" placeholder="Type your official letter text here..."></textarea>
+            const amount = parseFloat(amountInput.value);
+            const note = noteInput.value.trim() || 'General Expense';
 
-                    <div class="mt-12 flex justify-between items-end text-xs">
-                        <div>
-                            <div class="border-b border-slate-400 w-40 mb-1"></div>
-                            <p class="font-bold text-slate-800">Authorized Signature</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+            if (isNaN(amount) || amount <= 0) {
+                alert('Meharbani karke sahi amount likhein!');
+                return;
+            }
 
-        <!-- SECTION 3: PAYMENT RECEIPT -->
-        <section id="sec-receipt" class="tab-content">
-            <div class="card">
-                <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500">💵 Payment Receipt</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
-                </div>
+            const newTransaction = {
+                amount: amount,
+                note: note,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })
+            };
 
-                <div class="printable print-area">
-                    <div class="text-center border-b-2 border-slate-800 pb-3 mb-6">
-                        <input type="text" value="CASH / PAYMENT RECEIPT" class="text-xl font-extrabold text-slate-900 text-center w-full tracking-widest">
-                        <input type="text" value="Receipt No: #RCT-001" class="text-xs text-slate-500 text-center w-full mt-1">
-                    </div>
+            transactions.push(newTransaction);
+            localStorage.setItem('smart_budget_data', JSON.stringify(transactions));
 
-                    <div class="space-y-4 text-xs text-slate-800">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold w-28">Received From:</span>
-                            <input type="text" placeholder="Payer Full Name" class="border-line flex-1 py-1 font-semibold">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold w-28">The Sum of:</span>
-                            <input type="text" placeholder="Amount in words / numbers" class="border-line flex-1 py-1">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold w-28">Payment For:</span>
-                            <input type="text" placeholder="Description / Purpose of payment" class="border-line flex-1 py-1">
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold w-28">Payment Mode:</span>
-                            <input type="text" value="Cash / Online Transfer" class="border-line flex-1 py-1">
-                        </div>
-                    </div>
+            amountInput.value = '';
+            noteInput.value = '';
 
-                    <div class="mt-12 flex justify-between items-center pt-6 border-t border-slate-200 text-xs">
-                        <div class="bg-slate-100 p-3 rounded-lg border border-slate-300">
-                            <span class="font-bold text-slate-700">Amount Paid: </span>
-                            <input type="text" value="PKR 0.00" class="font-extrabold text-amber-700 text-sm w-28">
-                        </div>
-                        <div class="text-center">
-                            <div class="border-b border-slate-400 w-36 mb-1"></div>
-                            <span class="text-slate-600 font-bold">Receiver Signature</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+            updateUI();
+        }
 
-        <!-- SECTION 4: ID CARD BUILDER -->
-        <section id="sec-idcard" class="tab-content">
-            <div class="card">
-                <div class="flex justify-between items-center mb-6 no-print">
-                    <h2 class="text-xl font-bold text-amber-500">🪪 Membership ID Card Builder</h2>
-                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400">🖨️ Print / PDF</button>
-                </div>
+        // Initial Load
+        updateUI();
+    </script>
+</body>
+</html>
 
-                <div class="printable print-area">
-                    <p class="text-center text-xs text-slate-400 mb-4 no-print">Click on any text below to edit details before printing</p>
-                    
-                    <div class="id-card-wrapper">
-                        
-                        <!-- CARD FRONT -->
-                        <div class="id-card-front">
-                            <div class="id-card-header">
-                                <input type="text" value="FOUNDATION NAME" class="text-xs font-black text-white text-center w-full uppercase tracking-wider">
-                                <input type="text" value="MEMBERSHIP CARD" class="text-[9px] text-amber-400 text-center w-full font-bold">
-                            </div>
-
-                            <div class="id-photo-frame">
-                                👤
-                            </div>
-
-                            <div class="px-4 text-center">
-                                <input type="text" value="MEMBER FULL NAME" class="text-sm font-extrabold text-slate-900 text-center w-full">
-                                <input type="text" value="Executive Member / Volunteer" class="text-[10px] text-amber-600 font-bold text-center w-full mt-0.5">
-                            </div>
-
-                            <div class="px-4 mt-3 space-y-1 text-[10px] text-slate-700">
-                                <div class="flex justify-between border-b pb-0.5">
-                                    <span class="font-bold text-slate-500">ID No:</span>
-                                    <input type="text" value="FTCF-2026-08" class="text-right font-mono font-bold w-28">
-                                </div>
-                                <div class="flex justify-between border-b pb-0.5">
-                                    <span class="font-bold text-slate-500">CNIC:</span>
-                                    <input type="text" value="35202-0000000-0" class="text-right font-mono w-28">
-                                </div>
-                                <div class="flex justify-between border-b pb-0.5">
-                                    <span class="font-bold text-slate-500">Blood Group:</span>
-                                    <input type="text" value="B +ve" class="text-right font-bold text-red-600 w-28">
-                                </div>
-                            </div>
-
-                            <div class="mt-auto p-2 bg-slate-900 text-center">
-                                <input type="text" value="Valid Thru: Dec 2028" class="text-[9px] text-slate-300 text-center w-full font-mono">
-                            </div>
-                        </div>
-
-                        <!-- CARD BACK -->
-                        <div class="id-card-back">
-                            <div class="id-card-header" style="padding: 10px 5px;">
-                                <span class="text-[10px] font-bold text-white uppercase">TERMS & EMERGENCY CONTACT</span>
-                            </div>
-
-                            <div class="p-3 text-[9px] text-slate-600 space-y-2 flex-1">
-                                <p class="leading-tight">• This card is non-transferable and remains the property of the organization.</p>
-                                <p class="leading-tight">• If found, please return to the official head office address below.</p>
-
-                                <div class="pt-2 border-t mt-2">
-                                    <p class="font-bold text-slate-800">Helpline / Emergency:</p>
-                                    <input type="text" value="+92 300 0000000" class="font-mono text-slate-900 w-f
