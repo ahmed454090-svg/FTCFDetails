@@ -3,172 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DocuCraft | Document Generator</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title>DocuCraft | Professional Document Generator</title>
     
-    <!-- Local / Fallback Styles -->
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        body { background-color: #050505; font-family: 'Inter', sans-serif; overflow-x: hidden; margin: 0; }
         
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: #050505; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
-
-        /* Direct CSS Display Toggle (Faster & Independent of external JS) */
-        .tab-content { display: none !important; padding-top: 70px; padding-bottom: 100px; }
+        #splash { 
+            position: fixed; inset: 0; z-index: 9999; 
+            background: linear-gradient(135deg, #0f172a 0%, #000000 100%); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            transition: opacity 0.4s ease-in-out; 
+        }
+        
+        .circle-container { position: relative; width: 120px; height: 120px; display: flex; justify-content: center; align-items: center; }
+        .circle { position: absolute; border: 3px solid transparent; border-radius: 50%; animation: rotate 3s linear infinite; }
+        .circle-1 { width: 100%; height: 100%; border-top: 3px solid #f59e0b; }
+        .circle-2 { width: 80%; height: 80%; border-bottom: 3px solid #3b82f6; animation-direction: reverse; }
+        .brand-text { font-size: 1.5rem; font-weight: 800; color: #ffffff; letter-spacing: 2px; }
+        
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .typing-text { font-family: 'JetBrains Mono', monospace; color: #f59e0b; margin-top: 20px; font-size: 0.9rem; font-weight: 700; letter-spacing: 0.1em; border-right: 2px solid #f59e0b; white-space: nowrap; animation: typing 2s steps(25, end), blink 0.75s step-end infinite; }
+        @keyframes typing { from { width: 0 } to { width: 22ch } }
+        @keyframes blink { from, to { border-color: transparent } 50% { border-color: #f59e0b } }
+        
+        /* Tab Styles Fix */
+        .tab-content { display: none !important; min-height: 100vh; padding-bottom: 120px; padding-top: 80px; }
         .tab-content.active { display: block !important; }
-
-        /* Fixed Navigation */
-        .nav-bar {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 450px; height: 60px;
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 20px; display: flex; justify-content: space-around;
-            align-items: center; z-index: 1000; backdrop-filter: blur(10px);
-        }
-
-        .nav-btn {
-            background: none; border: none; color: #64748b; font-size: 11px;
-            font-weight: 600; cursor: pointer; display: flex; flex-direction: column;
-            align-items: center; gap: 4px; width: 25%; height: 100%; justify-content: center;
-        }
-
-        .nav-btn.active-btn { color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
-
-        /* Splash Screen Fix */
-        #splash {
-            position: fixed; inset: 0; z-index: 9000;
-            background: #090d16; display: flex; flex-direction: column;
-            justify-content: center; align-items: center; pointer-events: none; /* Allows clicks through if stuck */
-        }
-
-        .card {
-            background: #121212; border: 1px solid rgba(255,255,255,0.08);
-            border-radius: 20px; padding: 20px; margin: 0 auto 20px auto; max-width: 600px;
-        }
-
-        .print-area { background: #ffffff; color: #000; padding: 20px; border-radius: 12px; min-height: 300px; }
         
+        .luxury-nav { background: rgba(15, 15, 15, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .tab-btn { transition: all 0.3s ease; color: #94a3b8; cursor: pointer; }
+        .tab-btn:hover { color: #ffffff; }
+        .tab-btn.active-tab { color: #f59e0b !important; transform: translateY(-3px); text-shadow: 0 0 10px rgba(245, 158, 11, 0.5); }
+        .glass-card { background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+
         @media print {
             body * { visibility: hidden; }
             .printable, .printable * { visibility: visible; }
-            .printable { position: absolute; left: 0; top: 0; width: 100%; }
+            .printable { position: absolute; left: 0; top: 0; width: 100%; color: #000 !important; background: #fff !important; padding: 20px; }
+            .no-print { display: none !important; }
         }
     </style>
 
-    <!-- External Assets -->
+    <!-- Instant Removal Script for Splash Screen -->
+    <script>
+        function removeSplash() {
+            var splash = document.getElementById('splash');
+            if (splash && splash.style.display !== 'none') {
+                splash.style.opacity = '0';
+                setTimeout(function() { splash.style.display = 'none'; }, 400);
+            }
+        }
+        setTimeout(removeSplash, 1000);
+    </script>
+
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
-<body>
+<body class="text-slate-200">
 
     <!-- Splash Screen -->
-    <div id="splash">
-        <h1 style="color:#f59e0b; font-size:24px; font-weight:800;">DOCUCRAFT</h1>
-        <p style="color:#64748b; font-size:12px; margin-top:5px;">Loading Workspace...</p>
+    <div id="splash" onclick="removeSplash()">
+        <div class="circle-container">
+            <div class="circle circle-1"></div>
+            <div class="circle circle-2"></div>
+            <div class="brand-text">DOCU</div>
+        </div>
+        <div class="typing-text">INSTANT DOCUMENT HUB</div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <main style="padding: 20px;">
-        <!-- Tab 1 -->
-        <section id="invoice" class="tab-content active">
-            <div class="card">
-                <h2 style="color:#f59e0b; margin-bottom:15px;">Invoice Section</h2>
-                <div class="printable print-area">
-                    <h3>INVOICE FORM</h3>
-                    <p>Bill To: <input type="text" style="border-bottom:1px solid #000; outline:none;"></p>
+    <!-- Top Utility Bar -->
+    <div class="fixed top-0 left-0 right-0 z-[60] h-14 bg-black/80 backdrop-blur-md border-b border-white/10 px-6 flex items-center justify-between no-print">
+        <div class="flex items-center gap-2">
+            <i class="fas fa-file-invoice text-amber-500 text-xl"></i>
+            <span class="font-bold tracking-wider text-white">DocuCraft</span>
+        </div>
+        
+        <div class="hidden md:flex text-xs text-slate-500 border border-dashed border-slate-700 px-4 py-1 rounded">
+            Ad Space (728x90 Banner)
+        </div>
+
+        <div class="flex gap-3">
+            <button onclick="openModal('info-modal')" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-amber-500 flex items-center justify-center transition"><i class="fas fa-info-circle"></i></button>
+            <button onclick="openModal('ad-modal')" class="w-8 h-8 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-blue-400 flex items-center justify-center transition"><i class="fas fa-ad"></i></button>
+        </div>
+    </div>
+
+    <!-- Modal: Info & Privacy -->
+    <div id="info-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md no-print">
+        <div class="glass-card p-6 rounded-3xl w-full max-w-md text-left">
+            <h2 class="text-white text-lg font-bold mb-3"><i class="fas fa-shield-alt text-amber-500 mr-2"></i>About & Privacy</h2>
+            <p class="text-xs text-slate-400 leading-relaxed mb-4">
+                DocuCraft is a 100% free client-side document generator tool. We do not store any of your custom inputs or document records on external servers. All generated files remain private within your browser session.
+            </p>
+            <button onclick="closeModal('info-modal')" class="w-full py-2.5 bg-amber-500 hover:bg-amber-600 rounded-xl text-black font-bold text-sm transition">Got it</button>
+        </div>
+    </div>
+
+    <!-- Modal: Featured Ad Space -->
+    <div id="ad-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md no-print">
+        <div class="glass-card p-6 rounded-3xl w-full max-w-md text-center">
+            <h2 class="text-white text-lg font-bold mb-2">Sponsor Announcement</h2>
+            <div class="bg-white/5 p-6 rounded-xl border border-dashed border-slate-700 my-4 text-xs text-slate-400">
+                [ Insert AdSense Responsive Ad Code Here ]
+            </div>
+            <button onclick="closeModal('ad-modal')" class="w-full py-2.5 bg-white/10 hover:bg-white/20 rounded-xl text-white font-bold text-sm transition">Close Ad</button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <main class="max-w-3xl mx-auto px-4">
+
+        <!-- TAB 1: INVOICE GENERATOR -->
+        <section id="tab-invoice" class="tab-content active">
+            <div class="glass-card p-6 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-receipt mr-2"></i>Invoice Builder</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400 transition"><i class="fas fa-print mr-1"></i> Print / Save PDF</button>
+                </div>
+
+                <div class="printable bg-white text-slate-900 p-6 rounded-xl">
+                    <div class="flex justify-between border-b pb-4 mb-4">
+                        <div>
+                            <h1 class="text-2xl font-extrabold text-slate-800">INVOICE</h1>
+                            <p class="text-xs text-slate-500">Invoice No: #<span id="inv-num">1001</span></p>
+                        </div>
+                        <div class="text-right">
+                            <input type="text" placeholder="Your Company Name" class="font-bold text-right text-slate-800 border-b border-slate-300 focus:outline-none w-48 text-sm">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-6 text-xs">
+                        <div>
+                            <p class="font-bold text-slate-700">Billed To:</p>
+                            <input type="text" placeholder="Client Name / Business" class="w-full border-b border-slate-200 focus:outline-none py-1">
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-slate-700">Date:</p>
+                            <input type="date" class="border-b border-slate-200 focus:outline-none py-1 text-slate-600">
+                        </div>
+                    </div>
+
+                    <table class="w-full text-xs text-left mb-6">
+                        <thead>
+                            <tr class="border-b-2 border-slate-800 text-slate-700">
+                                <th class="py-2">Description</th>
+                                <th class="py-2 text-right">Price ($)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoice-items">
+                            <tr class="border-b border-slate-100">
+                                <td class="py-2"><input type="text" placeholder="Service / Product Description" class="w-full focus:outline-none"></td>
+                                <td class="py-2 text-right"><input type="number" value="100" onchange="calcTotal()" class="inv-price w-20 text-right focus:outline-none"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="flex justify-between items-center border-t pt-4">
+                        <button onclick="addInvoiceRow()" class="no-print text-xs text-blue-600 font-bold">+ Add Item</button>
+                        <div class="text-right">
+                            <span class="text-xs font-bold text-slate-600">Total Amount: </span>
+                            <span class="text-lg font-bold text-amber-600">$<span id="inv-total">100.00</span></span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Tab 2 -->
-        <section id="letterhead" class="tab-content">
-            <div class="card">
-                <h2 style="color:#f59e0b; margin-bottom:15px;">Letterhead Section</h2>
-                <div class="printable print-area">
-                    <h3>OFFICIAL LETTERHEAD</h3>
-                    <textarea style="width:100%; height:150px; margin-top:10px;" placeholder="Document body..."></textarea>
+        <!-- TAB 2: LETTERHEAD BUILDER -->
+        <section id="tab-letterhead" class="tab-content">
+            <div class="glass-card p-6 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-file-alt mr-2"></i>Official Letterhead</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400 transition"><i class="fas fa-print mr-1"></i> Print / Save PDF</button>
+                </div>
+
+                <div class="printable bg-white text-slate-900 p-8 rounded-xl min-h-[500px]">
+                    <div class="flex items-center justify-between border-b-2 border-slate-800 pb-4 mb-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-slate-800 text-white rounded-lg flex items-center justify-center font-bold text-lg">HQ</div>
+                            <div>
+                                <input type="text" value="ORGANIZATION NAME" class="font-extrabold text-slate-800 text-base focus:outline-none w-full">
+                                <input type="text" value="Official Correspondence Document" class="text-xs text-slate-500 focus:outline-none w-full">
+                            </div>
+                        </div>
+                        <div class="text-right text-[10px] text-slate-500">
+                            <p>Ref: <input type="text" value="REF-2026-001" class="w-20 focus:outline-none"></p>
+                            <p>Date: <input type="text" value="July 20, 2026" class="w-20 focus:outline-none"></p>
+                        </div>
+                    </div>
+
+                    <div class="my-6">
+                        <textarea class="w-full h-64 text-xs leading-relaxed text-slate-700 focus:outline-none resize-none" placeholder="Type your letter body content here..."></textarea>
+                    </div>
+
+                    <div class="mt-12 flex justify-between items-end text-xs pt-8 border-t border-slate-100">
+                        <div>
+                            <p class="font-bold text-slate-800">Authorized Signature</p>
+                            <p class="text-[10px] text-slate-400">Executive Management</p>
+                        </div>
+                        <div class="text-right text-[10px] text-slate-400">
+                            Page 1 of 1
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Tab 3 -->
-        <section id="receipt" class="tab-content">
-            <div class="card">
-                <h2 style="color:#f59e0b; margin-bottom:15px;">Receipt Section</h2>
-                <div class="printable print-area">
-                    <h3>RECEIPT FORM</h3>
-                    <p>Amount: <input type="text" style="border-bottom:1px solid #000; outline:none;"></p>
+        <!-- TAB 3: RECEIPT GENERATOR -->
+        <section id="tab-receipt" class="tab-content">
+            <div class="glass-card p-6 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-money-check-alt mr-2"></i>Payment Voucher</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400 transition"><i class="fas fa-print mr-1"></i> Print / Save PDF</button>
+                </div>
+
+                <div class="printable bg-white text-slate-900 p-6 rounded-xl border-2 border-dashed border-slate-300">
+                    <div class="text-center border-b pb-3 mb-4">
+                        <h2 class="text-lg font-bold tracking-wider text-slate-800">CASH RECEIPT</h2>
+                        <p class="text-[10px] text-slate-400">Payment Confirmation Slip</p>
+                    </div>
+
+                    <div class="space-y-3 text-xs">
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Received From:</span>
+                            <input type="text" placeholder="Payer Name" class="border-b font-semibold w-48 text-right focus:outline-none">
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Amount Paid:</span>
+                            <input type="text" placeholder="$0.00" class="border-b font-semibold w-48 text-right text-amber-600 focus:outline-none">
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">For Payment Of:</span>
+                            <input type="text" placeholder="Description / Service" class="border-b font-semibold w-48 text-right focus:outline-none">
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Payment Method:</span>
+                            <select class="border-b font-semibold text-right focus:outline-none bg-transparent">
+                                <option>Cash</option>
+                                <option>Online Bank Transfer</option>
+                                <option>Credit Card</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-between items-center text-[10px] text-slate-400 pt-4 border-t">
+                        <span>Status: <strong class="text-green-600">PAID & VERIFIED</strong></span>
+                        <span>Receiver Sign: ____________</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- Tab 4 -->
-        <section id="register" class="tab-content">
-            <div class="card">
-                <h2 style="color:#f59e0b; margin-bottom:15px;">Registration Section</h2>
-                <div class="printable print-area">
-                    <h3>REGISTRATION FORM</h3>
-                    <p>Member Name: <input type="text" style="border-bottom:1px solid #000; outline:none;"></p>
+        <!-- TAB 4: REGISTRATION FORM -->
+        <section id="tab-register" class="tab-content">
+            <div class="glass-card p-6 rounded-3xl shadow-xl">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold text-amber-500"><i class="fas fa-id-card mr-2"></i>Member Enrollment</h2>
+                    <button onclick="window.print()" class="px-4 py-2 bg-amber-500 text-black font-bold rounded-xl text-xs hover:bg-amber-400 transition"><i class="fas fa-print mr-1"></i> Print / Save PDF</button>
+                </div>
+
+                <div class="printable bg-white text-slate-900 p-6 rounded-xl">
+                    <h2 class="text-base font-bold text-center text-slate-800 border-b pb-2 mb-4">MEMBERSHIP REGISTRATION FORM</h2>
+                    
+                    <div class="grid grid-cols-2 gap-4 text-xs mb-4">
+                        <div>
+                            <label class="block text-slate-500 mb-1">Full Name</label>
+                            <input type="text" placeholder="John Doe" class="w-full border p-2 rounded focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-slate-500 mb-1">Contact / Phone</label>
+                            <input type="text" placeholder="+1 234 567 890" class="w-full border p-2 rounded focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="mb-4 text-xs">
+                        <label class="block text-slate-500 mb-1">Email Address</label>
+                        <input type="email" placeholder="john@example.com" class="w-full border p-2 rounded focus:outline-none">
+                    </div>
+
+                    <div class="mb-6 text-xs">
+                        <label class="block text-slate-500 mb-1">Residential Address</label>
+                        <textarea rows="2" placeholder="Street Address..." class="w-full border p-2 rounded focus:outline-none resize-none"></textarea>
+                    </div>
+
+                    <div class="border-t pt-4 flex justify-between items-center text-[10px] text-slate-500">
+                        <p>Declaration: Information provided is correct.</p>
+                        <p>Applicant Signature: ________________</p>
+                    </div>
                 </div>
             </div>
         </section>
+
     </main>
 
-    <!-- Bottom Navigation -->
-    <nav class="nav-bar">
-        <button class="nav-btn active-btn" onclick="openTab('invoice', this)">
-            <i class="fas fa-file-invoice" style="font-size:16px;"></i>
-            <span>Invoice</span>
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-6 left-4 right-4 max-w-lg mx-auto luxury-nav rounded-2xl flex justify-around items-center z-[999] h-16 px-4 shadow-2xl border border-white/10 no-print">
+        <button onclick="switchTab('tab-invoice', this)" class="tab-btn active-tab flex flex-col items-center">
+            <i class="fas fa-file-invoice text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Invoice</span>
         </button>
-        <button class="nav-btn" onclick="openTab('letterhead', this)">
-            <i class="fas fa-file-alt" style="font-size:16px;"></i>
-            <span>Letterhead</span>
+        <button onclick="switchTab('tab-letterhead', this)" class="tab-btn flex flex-col items-center">
+            <i class="fas fa-file-alt text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Letterhead</span>
         </button>
-        <button class="nav-btn" onclick="openTab('receipt', this)">
-            <i class="fas fa-receipt" style="font-size:16px;"></i>
-            <span>Receipt</span>
+        <button onclick="switchTab('tab-receipt', this)" class="tab-btn flex flex-col items-center">
+            <i class="fas fa-money-check-alt text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Receipt</span>
         </button>
-        <button class="nav-btn" onclick="openTab('register', this)">
-            <i class="fas fa-id-card" style="font-size:16px;"></i>
-            <span>Register</span>
+        <button onclick="switchTab('tab-register', this)" class="tab-btn flex flex-col items-center">
+            <i class="fas fa-id-card text-lg pointer-events-none"></i>
+            <span class="text-[9px] font-semibold mt-1 pointer-events-none">Register</span>
         </button>
     </nav>
 
+    <!-- Tab Switching Logic Fix -->
     <script>
-        // Force hide splash when DOM loads
-        window.addEventListener('DOMContentLoaded', function() {
-            var splash = document.getElementById('splash');
-            if(splash) splash.style.display = 'none';
-        });
+        window.addEventListener('load', removeSplash);
 
-        // Fail-safe Tab Switching Function
-        function openTab(tabId, btnElement) {
-            try {
-                // 1. Hide all tabs
-                var tabs = document.querySelectorAll('.tab-content');
-                for (var i = 0; i < tabs.length; i++) {
-                    tabs[i].classList.remove('active');
-                }
-
-                // 2. Remove active state from all buttons
-                var btns = document.querySelectorAll('.nav-btn');
-                for (var j = 0; j < btns.length; j++) {
-                    btns[j].classList.remove('active-btn');
-                }
-
-                // 3. Activate target tab and button
-                var targetTab = document.getElementById(tabId);
-                if (targetTab) {
-                    targetTab.classList.add('active');
-                }
-
-                if (btnElement) {
-                    btnElement.classList.add('active-btn');
-                }
-            } catch (err) {
-                console.error("Tab switch error: ", err);
-            }
-        }
-    </script>
-</body>
-</html>
+        function switchTab(tabId, btn) {
+            if (navigator.vibrate) navigator.vibrate(15);
+            
+            // All tabs reset
+            var tabs = document.querySelectorAll('
