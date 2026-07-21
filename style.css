@@ -1,0 +1,14 @@
+/* Custom scrollbar for output box */
+#output::-webkit-scrollbar {
+    width: 6px;
+}
+#output::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+}
+#output::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 4px;
+}
+#output::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+}
