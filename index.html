@@ -1,385 +1,83 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Community & Micro-Ledger App</title>
+    <title>AI Content Studio Pro</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-        }
-        .glass-card {
-            background: rgba(30, 41, 59, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0f172a;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #334155;
-            border-radius: 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="min-h-screen flex flex-col pb-20 md:pb-6">
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans">
 
-    <!-- Header / Navbar -->
-    <header class="sticky top-0 z-50 glass-card border-b border-slate-800 px-4 py-3">
-        <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-indigo-500/30">
-                    <i class="fa-solid font-bold text-lg fa-wallet"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg text-white leading-tight">SmartLedger <span class="text-xs text-indigo-400 font-mono font-normal">v1.0</span></h1>
-                    <p class="text-xs text-slate-400">Micro-Savings & Community Expense Tracker</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2">
-                <button onclick="exportCSV()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium border border-slate-700 flex items-center gap-1.5 transition">
-                    <i class="fa-solid fa-download text-emerald-400"></i> Export
-                </button>
-                <button onclick="shareSummary()" class="px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 text-xs font-medium border border-emerald-500/30 flex items-center gap-1.5 transition">
-                    <i class="fa-brands fa-whatsapp text-sm"></i> Share
-                </button>
-            </div>
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur p-4 sticky top-0 z-10">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-400 flex items-center gap-2">
+                <span>🚀</span> AI Content Studio
+            </h1>
+            <input type="password" id="apiKey" placeholder="Enter Gemini API Key..." 
+                   class="bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500 w-48 sm:w-64">
         </div>
     </header>
 
     <!-- Main Container -->
-    <main class="max-w-4xl mx-auto w-full px-4 pt-6 flex-1 space-y-6">
-
-        <!-- Stat Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <!-- Total Income -->
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-                <div class="absolute -right-2 -top-2 w-16 h-16 bg-emerald-500/10 rounded-full blur-xl"></div>
-                <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-                    <span>Total Income</span>
-                    <i class="fa-solid fa-circle-arrow-down text-emerald-400 text-base"></i>
-                </div>
-                <div class="text-2xl font-bold text-white tracking-tight" id="totalIncome">PKR 0</div>
-                <div class="mt-2 text-[11px] text-emerald-400 flex items-center gap-1">
-                    <i class="fa-solid fa-arrow-trend-up"></i> Total Inflow
-                </div>
-            </div>
-
-            <!-- Total Expenses -->
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden">
-                <div class="absolute -right-2 -top-2 w-16 h-16 bg-rose-500/10 rounded-full blur-xl"></div>
-                <div class="flex items-center justify-between text-slate-400 text-xs font-medium mb-1">
-                    <span>Total Expense</span>
-                    <i class="fa-solid fa-circle-arrow-up text-rose-400 text-base"></i>
-                </div>
-                <div class="text-2xl font-bold text-white tracking-tight" id="totalExpense">PKR 0</div>
-                <div class="mt-2 text-[11px] text-rose-400 flex items-center gap-1">
-                    <i class="fa-solid fa-arrow-trend-down"></i> Total Outflow
-                </div>
-            </div>
-
-            <!-- Net Savings / Balance -->
-            <div class="glass-card p-5 rounded-2xl relative overflow-hidden bg-gradient-to-br from-indigo-900/40 to-slate-900/60 border-indigo-500/20">
-                <div class="absolute -right-2 -top-2 w-16 h-16 bg-indigo-500/20 rounded-full blur-xl"></div>
-                <div class="flex items-center justify-between text-indigo-300 text-xs font-medium mb-1">
-                    <span>Net Balance</span>
-                    <i class="fa-solid fa-vault text-indigo-400 text-base"></i>
-                </div>
-                <div class="text-2xl font-bold text-white tracking-tight" id="netBalance">PKR 0</div>
-                <div class="mt-2 text-[11px] text-indigo-300 flex items-center gap-1">
-                    <i class="fa-solid fa-shield-halved"></i> Reserve Fund
-                </div>
-            </div>
-        </div>
-
-        <!-- Add Transaction Form & Visual Analytics -->
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+    <main class="max-w-5xl mx-auto w-full p-4 sm:p-6 flex-1 grid grid-cols-1 md:grid-cols-3 gap-6">
+        
+        <!-- Controls Panel -->
+        <div class="md:col-span-1 space-y-4 bg-slate-800/40 p-5 rounded-xl border border-slate-800 h-fit">
+            <h2 class="text-lg font-semibold text-slate-200 border-b border-slate-700 pb-2">Generator Inputs</h2>
             
-            <!-- Form Column -->
-            <div class="md:col-span-2 glass-card p-5 rounded-2xl border border-slate-800">
-                <h2 class="text-sm font-semibold text-slate-200 mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-plus-circle text-indigo-400"></i> Add New Entry
-                </h2>
-                <form id="txForm" onsubmit="addTransaction(event)" class="space-y-4">
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Type</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" id="btnIncome" onclick="setType('income')" class="py-2 rounded-xl text-xs font-medium border border-slate-700 bg-slate-800 text-slate-300 flex items-center justify-center gap-2 transition">
-                                <i class="fa-solid fa-arrow-down text-emerald-400"></i> Income
-                            </button>
-                            <button type="button" id="btnExpense" onclick="setType('expense')" class="py-2 rounded-xl text-xs font-medium border border-rose-500/40 bg-rose-500/10 text-rose-300 flex items-center justify-center gap-2 transition">
-                                <i class="fa-solid fa-arrow-up text-rose-400"></i> Expense
-                            </button>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Description / Category</label>
-                        <input type="text" id="desc" required placeholder="e.g. Utility Bills, Fund Deposit, Groceries" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Amount (PKR)</label>
-                        <input type="number" id="amount" required placeholder="0.00" min="1" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs text-slate-400 mb-1">Category</label>
-                        <select id="category" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-indigo-500 transition">
-                            <option value="General">General / Other</option>
-                            <option value="Community Welfare">Community Welfare</option>
-                            <option value="Utilities">Utilities & Bills</option>
-                            <option value="Food & Provisions">Food & Provisions</option>
-                            <option value="Emergency Fund">Emergency Fund</option>
-                        </select>
-                    </div>
-
-                    <button type="submit" class="w-full py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium text-xs shadow-lg shadow-indigo-600/30 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-check-circle"></i> Save Entry
-                    </button>
-                </form>
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Topic / Video Idea</label>
+                <input type="text" id="topicInput" placeholder="e.g., How to start AI Video creation" 
+                       class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
             </div>
 
-            <!-- Chart Column -->
-            <div class="md:col-span-3 glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
-                <div>
-                    <h2 class="text-sm font-semibold text-slate-200 mb-2 flex items-center gap-2">
-                        <i class="fa-solid fa-chart-pie text-indigo-400"></i> Financial Breakdown
-                    </h2>
-                    <p class="text-xs text-slate-400 mb-4">Visual summary of income vs expenses</p>
-                </div>
-                <div class="relative w-full h-48 flex justify-center items-center">
-                    <canvas id="financeChart"></canvas>
-                </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Content Type</label>
+                <select id="contentType" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                    <option value="youtube">YouTube Video Script & SEO</option>
+                    <option value="shorts">YouTube Shorts / Reels Script</option>
+                    <option value="thumbnail">AI Thumbnail Prompts</option>
+                </select>
             </div>
 
+            <div>
+                <label class="block text-xs font-medium text-slate-400 mb-1">Tone</label>
+                <select id="tone" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-sm text-slate-200 focus:outline-none focus:border-indigo-500">
+                    <option value="engaging & energetic">Engaging & Energetic</option>
+                    <option value="professional & informative">Professional & Informative</option>
+                    <option value="funny & casual">Funny & Casual</option>
+                </select>
+            </div>
+
+            <button id="generateBtn" onclick="generateContent()" 
+                    class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-lg transition-all flex items-center justify-center gap-2">
+                <span>⚡ Generate Content</span>
+            </button>
         </div>
 
-        <!-- Transactions History -->
-        <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
-            <div class="p-4 border-b border-slate-800 flex justify-between items-center">
-                <h2 class="text-sm font-semibold text-slate-200 flex items-center gap-2">
-                    <i class="fa-solid fa-list-check text-indigo-400"></i> Recent Ledger Records
-                </h2>
-                <button onclick="clearAllData()" class="text-xs text-rose-400 hover:text-rose-300 transition flex items-center gap-1">
-                    <i class="fa-solid fa-trash"></i> Clear All
+        <!-- Output Panel -->
+        <div class="md:col-span-2 bg-slate-800/40 p-5 rounded-xl border border-slate-800 flex flex-col min-h-[400px]">
+            <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-4">
+                <h2 class="text-lg font-semibold text-slate-200">Generated Output</h2>
+                <button onclick="copyOutput()" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded transition text-slate-300">
+                    📋 Copy Text
                 </button>
             </div>
+            
+            <div id="loader" class="hidden flex-1 flex flex-col items-center justify-center gap-2 text-indigo-400">
+                <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-500"></div>
+                <span class="text-sm text-slate-400">Generating response...</span>
+            </div>
 
-            <div class="overflow-x-auto max-h-80 overflow-y-auto custom-scrollbar">
-                <table class="w-full text-left text-xs text-slate-300">
-                    <thead class="bg-slate-900/60 text-slate-400 uppercase text-[10px] tracking-wider sticky top-0 backdrop-blur-md">
-                        <tr>
-                            <th class="px-4 py-3">Date</th>
-                            <th class="px-4 py-3">Description</th>
-                            <th class="px-4 py-3">Category</th>
-                            <th class="px-4 py-3 text-right">Amount</th>
-                            <th class="px-4 py-3 text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody id="txTableBody" class="divide-y divide-slate-800/60">
-                        <!-- Dynamic content -->
-                    </tbody>
-                </table>
+            <div id="output" class="text-sm leading-relaxed whitespace-pre-wrap text-slate-300 overflow-y-auto max-h-[500px] flex-1">
+                Your AI-generated content will appear here...
             </div>
         </div>
-
     </main>
 
-    <script>
-        let transactions = JSON.parse(localStorage.getItem('smart_ledger_tx')) || [
-            { id: 1, type: 'income', desc: 'Initial Fund Collection', amount: 25000, category: 'Community Welfare', date: '2026-07-20' },
-            { id: 2, type: 'expense', desc: 'Emergency Relief & Supplies', amount: 8500, category: 'Emergency Fund', date: '2026-07-21' }
-        ];
-
-        let currentType = 'expense';
-        let chartInstance = null;
-
-        function setType(type) {
-            currentType = type;
-            const btnIn = document.getElementById('btnIncome');
-            const btnEx = document.getElementById('btnExpense');
-
-            if (type === 'income') {
-                btnIn.className = 'py-2 rounded-xl text-xs font-medium border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 flex items-center justify-center gap-2 transition';
-                btnEx.className = 'py-2 rounded-xl text-xs font-medium border border-slate-700 bg-slate-800 text-slate-400 flex items-center justify-center gap-2 transition';
-            } else {
-                btnEx.className = 'py-2 rounded-xl text-xs font-medium border border-rose-500/40 bg-rose-500/10 text-rose-300 flex items-center justify-center gap-2 transition';
-                btnIn.className = 'py-2 rounded-xl text-xs font-medium border border-slate-700 bg-slate-800 text-slate-400 flex items-center justify-center gap-2 transition';
-            }
-        }
-
-        function addTransaction(e) {
-            e.preventDefault();
-            const desc = document.getElementById('desc').value;
-            const amount = parseFloat(document.getElementById('amount').value);
-            const category = document.getElementById('category').value;
-            const date = new Date().toISOString().split('T')[0];
-
-            const newTx = {
-                id: Date.now(),
-                type: currentType,
-                desc,
-                amount,
-                category,
-                date
-            };
-
-            transactions.unshift(newTx);
-            saveAndUpdate();
-            document.getElementById('txForm').reset();
-            setType('expense');
-        }
-
-        function deleteTx(id) {
-            transactions = transactions.filter(t => t.id !== id);
-            saveAndUpdate();
-        }
-
-        function clearAllData() {
-            if(confirm("Are you sure you want to clear all records?")) {
-                transactions = [];
-                saveAndUpdate();
-            }
-        }
-
-        function saveAndUpdate() {
-            localStorage.setItem('smart_ledger_tx', JSON.stringify(transactions));
-            renderUI();
-        }
-
-        function renderUI() {
-            const tableBody = document.getElementById('txTableBody');
-            tableBody.innerHTML = '';
-
-            let totalIn = 0;
-            let totalEx = 0;
-
-            if (transactions.length === 0) {
-                tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-6 text-slate-500">No records found. Add your first transaction above!</td></tr>`;
-            }
-
-            transactions.forEach(tx => {
-                if(tx.type === 'income') totalIn += tx.amount;
-                else totalEx += tx.amount;
-
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-800/30 transition';
-                tr.innerHTML = `
-                    <td class="px-4 py-3 text-slate-400 font-mono text-[11px]">${tx.date}</td>
-                    <td class="px-4 py-3 font-medium text-slate-200">${tx.desc}</td>
-                    <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-full text-[10px] bg-slate-800 border border-slate-700 text-slate-300">${tx.category}</span></td>
-                    <td class="px-4 py-3 text-right font-semibold ${tx.type === 'income' ? 'text-emerald-400' : 'text-rose-400'}">
-                        ${tx.type === 'income' ? '+' : '-'} PKR ${tx.amount.toLocaleString()}
-                    </td>
-                    <td class="px-4 py-3 text-center">
-                        <button onclick="deleteTx(${tx.id})" class="text-slate-500 hover:text-rose-400 transition"><i class="fa-regular fa-trash-can"></i></button>
-                    </td>
-                `;
-                tableBody.appendChild(tr);
-            });
-
-            document.getElementById('totalIncome').innerText = `PKR ${totalIn.toLocaleString()}`;
-            document.getElementById('totalExpense').innerText = `PKR ${totalEx.toLocaleString()}`;
-            
-            const net = totalIn - totalEx;
-            const netEl = document.getElementById('netBalance');
-            netEl.innerText = `PKR ${net.toLocaleString()}`;
-            if(net >= 0) {
-                netEl.className = "text-2xl font-bold text-emerald-400 tracking-tight";
-            } else {
-                netEl.className = "text-2xl font-bold text-rose-400 tracking-tight";
-            }
-
-            updateChart(totalIn, totalEx);
-        }
-
-        function updateChart(income, expense) {
-            const ctx = document.getElementById('financeChart').getContext('2d');
-            
-            if(chartInstance) {
-                chartInstance.destroy();
-            }
-
-            chartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Income', 'Expense'],
-                    datasets: [{
-                        data: [income, expense],
-                        backgroundColor: ['#10b981', '#f43f5e'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#94a3b8', font: { size: 11 } }
-                        }
-                    },
-                    cutout: '70%'
-                }
-            });
-        }
-
-        function shareSummary() {
-            let totalIn = transactions.filter(t => t.type === 'income').reduce((a,b) => a + b.amount, 0);
-            let totalEx = transactions.filter(t => t.type === 'expense').reduce((a,b) => a + b.amount, 0);
-            let balance = totalIn - totalEx;
-
-            let msg = `📊 *SmartLedger Financial Summary*
-
-` +
-                      `🟢 Total Inflow: PKR ${totalIn.toLocaleString()}
-` +
-                      `🔴 Total Outflow: PKR ${totalEx.toLocaleString()}
-` +
-                      `💰 Net Reserve: PKR ${balance.toLocaleString()}
-
-` +
-                      `Shared via SmartLedger PWA App.`;
-
-            let whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-
-        function exportCSV() {
-            let csvContent = "data:text/csv;charset=utf-8,Date,Type,Description,Category,Amount
-";
-            transactions.forEach(t => {
-                csvContent += `${t.date},${t.type},"${t.desc}",${t.category},${t.amount}
-`;
-            });
-            let encodedUri = encodeURI(csvContent);
-            let link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "smart_ledger_transactions.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // Initial setup
-        window.onload = () => {
-            renderUI();
-        };
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
-
-
