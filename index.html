@@ -42,7 +42,7 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Glassmorphism Styles */
+        /* Glassmorphism Styles & Neon Glow */
         .glass-panel { 
             background: rgba(17, 24, 39, 0.75); 
             backdrop-filter: blur(20px); 
@@ -50,8 +50,28 @@
             border: 1px solid rgba(255, 255, 255, 0.08); 
         }
 
-        .tab-content { display: none; height: 100vh; width: 100vw; position: relative; }
-        .tab-content.active { display: block; }
+        .glass-glow:hover {
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.25);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        /* Tab Content & Page Switch Animations */
+        .tab-content { 
+            display: none; 
+            height: 100vh; 
+            width: 100vw; 
+            position: relative; 
+            opacity: 0;
+            transform: scale(0.98);
+            transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tab-content.active { 
+            display: block; 
+            opacity: 1;
+            transform: scale(1);
+        }
+        
         iframe { width: 100%; height: 100%; border: none; }
 
         /* Shimmer Loading Animation */
@@ -61,10 +81,93 @@
             animation: shimmer 1.5s infinite;
         }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* Golden Circle 3D Flip Card Loader */
+        .perspective-container {
+            perspective: 1200px;
+        }
         
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .spin-slow { animation: rotate 3s linear infinite; }
-        .spin-reverse { animation: rotate 2.5s linear infinite reverse; }
+        .card-3d-wrapper {
+            width: 140px;
+            height: 140px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: flipCircleGolden 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+        }
+
+        .card-face {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #fef08a;
+            background: linear-gradient(135deg, #f59e0b, #fbbf24, #d97706, #78350f);
+            box-shadow: 0 15px 35px rgba(245, 158, 11, 0.4), inset 0 2px 10px rgba(255, 255, 255, 0.5);
+            overflow: hidden;
+        }
+
+        .card-face::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.35), transparent);
+            transform: rotate(45deg);
+            animation: shine 2.5s infinite;
+        }
+
+        .card-back {
+            transform: rotateY(180deg);
+            background: linear-gradient(135deg, #b45309, #d97706, #fbbf24, #92400e);
+        }
+
+        .bg-tech-grid {
+            background-image: radial-gradient(rgba(245, 158, 11, 0.15) 1px, transparent 0);
+            background-size: 24px 24px;
+        }
+
+        @keyframes flipCircleGolden {
+            0% { 
+                transform: rotateY(0deg) rotateX(10deg) scale(0.95); 
+                box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+            }
+            50% { 
+                transform: rotateY(180deg) rotateX(-10deg) scale(1.08); 
+                box-shadow: 0 25px 45px rgba(245, 158, 11, 0.6);
+            }
+            100% { 
+                transform: rotateY(360deg) rotateX(10deg) scale(0.95); 
+                box-shadow: 0 10px 25px rgba(245, 158, 11, 0.3);
+            }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            50%, 100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .fade-in-pulse {
+            animation: pulseGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            from { opacity: 0.7; transform: translateY(0); }
+            to { opacity: 1; transform: translateY(-2px); }
+        }
+
+        /* Toast Popup Styles */
+        #toast {
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+        }
     </style>
 </head>
 <body class="text-slate-100 antialiased selection:bg-amber-500 selection:text-black">
@@ -74,25 +177,45 @@
         <i data-lucide="wifi-off" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i> Offline Mode: Pre-loaded cache available
     </div>
 
-    <!-- Modern Splash Screen -->
-    <div id="splash" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-2xl flex flex-col justify-center items-center transition-opacity duration-500">
-        <div class="relative w-32 h-32 flex justify-center items-center">
-            <div class="absolute inset-0 border-2 border-transparent border-t-white rounded-full spin-slow"></div>
-            <div class="absolute inset-2 border-2 border-transparent border-b-amber-500 rounded-full spin-reverse"></div>
-            <span class="text-2xl font-extrabold tracking-wider text-white">FTCF</span>
+    <!-- Custom Glassmorphic Toast Notification -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-[1001] pointer-events-none opacity-0 -translate-y-8 glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-2.5 border border-amber-500/40 shadow-2xl shadow-amber-500/10">
+        <div class="w-6 h-6 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i>
         </div>
-        <p class="text-amber-500 font-mono text-xs tracking-[0.3em] mt-6 font-bold uppercase">Mughal Brothers Network</p>
+        <span id="toast-msg" class="text-xs font-semibold text-white tracking-wide">Account number copied!</span>
     </div>
 
-    <!-- Header Controls (Bank & Notice Controls Restored) -->
+    <!-- Golden Circle 3D Splash Screen -->
+    <div id="splash" class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-2xl flex flex-col justify-center items-center transition-all duration-500 bg-tech-grid">
+        <div class="absolute w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="perspective-container relative">
+            <div class="card-3d-wrapper">
+                <div class="card-face">
+                    <span class="text-3xl font-black tracking-wider text-black drop-shadow-[0_1px_2px_rgba(255,255,255,0.6)]">FTCF</span>
+                    <span class="text-[8px] font-mono tracking-widest text-slate-950 font-extrabold uppercase -mt-0.5">Portal</span>
+                </div>
+                <div class="card-face card-back">
+                    <div class="w-7 h-7 rounded-full bg-black/20 border border-white/40 flex items-center justify-center mb-0.5">
+                        <i data-lucide="layers" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <span class="text-[10px] font-black tracking-widest text-black uppercase font-mono">MBN</span>
+                </div>
+            </div>
+        </div>
+
+        <p class="text-amber-500 font-mono text-xs tracking-[0.3em] mt-8 font-bold uppercase fade-in-pulse">Mughal Brothers Network</p>
+    </div>
+
+    <!-- Header Controls -->
     <header class="fixed top-4 right-4 z-[60] flex gap-2 pointer-events-auto">
-        <button id="installBtn" class="hidden w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+        <button id="installBtn" class="hidden w-10 h-10 rounded-2xl glass-panel glass-glow flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
             <i data-lucide="download" class="w-4 h-4"></i>
         </button>
-        <button onclick="toggleModal('bank-popup', true)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+        <button onclick="toggleModal('bank-popup', true)" class="w-10 h-10 rounded-2xl glass-panel glass-glow flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
             <i data-lucide="building-2" class="w-4 h-4"></i>
         </button>
-        <button onclick="toggleModal('notice-popup', true)" class="relative w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+        <button onclick="toggleModal('notice-popup', true)" class="relative w-10 h-10 rounded-2xl glass-panel glass-glow flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
             <i data-lucide="bell" class="w-4 h-4"></i>
             <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-black"></span>
         </button>
@@ -101,7 +224,7 @@
     <!-- Bank Modal -->
     <div id="bank-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md transition-all">
         <div class="glass-panel p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl border border-white/10">
-            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-amber-500/20">
                 <i data-lucide="building-2" class="w-6 h-6"></i>
             </div>
             <h2 class="text-white text-base font-bold mb-4">HBL Konnect Details</h2>
@@ -127,7 +250,7 @@
     <!-- Notice Modal -->
     <div id="notice-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md transition-all">
         <div class="glass-panel p-6 rounded-3xl w-full max-w-sm shadow-2xl border border-white/10">
-            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-4">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-4 border border-amber-500/20">
                 <i data-lucide="megaphone" class="w-6 h-6"></i>
             </div>
             <h2 class="text-white text-base font-bold mb-2">System Notice</h2>
@@ -144,23 +267,23 @@
     <div id="yearly" class="tab-content" data-src="https://ftcf20-hub.github.io/Yearly-Record/"></div>
     <div id="rules" class="tab-content" data-src="https://ftcf20-hub.github.io/Loneportal/"></div>
 
-    <!-- Bottom Navigation -->
-    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99] glass-panel rounded-3xl p-1.5 flex items-center shadow-2xl border border-white/10 max-w-xs w-full justify-between">
-        <button data-target="ledger" onclick="switchTab('ledger', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+    <!-- Bottom Navigation with Dynamic Animated Pill Indicator -->
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99] glass-panel rounded-3xl p-1.5 flex items-center shadow-2xl border border-white/10 max-w-xs w-full justify-between relative">
+        <button data-target="ledger" onclick="switchTab('ledger', this)" class="tab-btn z-10 flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
             <i data-lucide="wallet" class="w-5 h-5"></i>
         </button>
-        <button data-target="monthly" onclick="switchTab('monthly', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+        <button data-target="monthly" onclick="switchTab('monthly', this)" class="tab-btn z-10 flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
             <i data-lucide="calendar-check-2" class="w-5 h-5"></i>
         </button>
         
-        <a href="https://chat.whatsapp.com/KuEfcgvGkOQHFY03h4IuHV?s=cl&p=a&ilr=1&amv=3" target="_blank" class="bg-amber-500 text-black w-11 h-11 flex items-center justify-center rounded-2xl font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-400 active:scale-90 transition-all mx-1">
+        <a href="https://chat.whatsapp.com/KuEfcgvGkOQHFY03h4IuHV?s=cl&p=a&ilr=1&amv=3" target="_blank" class="z-10 bg-amber-500 text-black w-11 h-11 flex items-center justify-center rounded-2xl font-bold shadow-lg shadow-amber-500/30 hover:bg-amber-400 active:scale-90 transition-all mx-1">
             <i data-lucide="message-circle" class="w-5 h-5"></i>
         </a>
 
-        <button data-target="yearly" onclick="switchTab('yearly', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+        <button data-target="yearly" onclick="switchTab('yearly', this)" class="tab-btn z-10 flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
             <i data-lucide="trending-up" class="w-5 h-5"></i>
         </button>
-        <button data-target="rules" onclick="switchTab('rules', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+        <button data-target="rules" onclick="switchTab('rules', this)" class="tab-btn z-10 flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
             <i data-lucide="scale" class="w-5 h-5"></i>
         </button>
     </nav>
@@ -169,15 +292,33 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Tab Switcher
+        // Custom Toast Notification Helper
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            toastMsg.innerText = message;
+            
+            toast.classList.remove('opacity-0', '-translate-y-8');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-8');
+            }, 2500);
+        }
+
+        // Tab Switcher with Animations & Scaling
         function switchTab(id, btnElement) { 
             if (navigator.vibrate) navigator.vibrate([10, 30, 10]); 
             
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('text-amber-500', 'bg-white/5')); 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('text-amber-500', 'bg-white/10', 'shadow-inner')); 
             
             const targetContainer = document.getElementById(id);
-            targetContainer.classList.add('active');
+            
+            setTimeout(() => {
+                targetContainer.classList.add('active');
+            }, 50);
 
             // Lazy Load with Shimmer Loading Placeholder
             if (!targetContainer.querySelector('iframe')) {
@@ -193,7 +334,7 @@
             }
             
             if (btnElement) {
-                btnElement.classList.add('text-amber-500', 'bg-white/5');
+                btnElement.classList.add('text-amber-500', 'bg-white/10');
             }
             
             localStorage.setItem('activeTab', id); 
@@ -209,16 +350,22 @@
             }
         }
 
-        // Account Copy Helper
+        // Account Copy Helper with Custom Toast
         function copyAccount(num) {
             navigator.clipboard.writeText(num);
             if (navigator.vibrate) navigator.vibrate(20);
-            alert('Account number copied!');
+            showToast('Account number copied to clipboard!');
         }
 
         // Network Status Detection
-        window.addEventListener('online', () => document.getElementById('offline-banner').classList.add('hidden'));
-        window.addEventListener('offline', () => document.getElementById('offline-banner').classList.remove('hidden'));
+        window.addEventListener('online', () => {
+            document.getElementById('offline-banner').classList.add('hidden');
+            showToast('Back online!');
+        });
+        window.addEventListener('offline', () => {
+            document.getElementById('offline-banner').classList.remove('hidden');
+            showToast('Offline Mode Activated');
+        });
 
         // Keyboard Navigation (Desktop)
         window.addEventListener('keydown', (e) => {
@@ -230,13 +377,14 @@
             }
         });
 
-        // App Initialization
+        // App Initialization (3 Seconds Smooth Fade Reveal)
         window.addEventListener('load', () => {
             const splash = document.getElementById('splash');
             setTimeout(() => {
                 splash.style.opacity = '0';
+                splash.style.transform = 'scale(1.05)';
                 setTimeout(() => { splash.style.display = 'none'; }, 500);
-            }, 600);
+            }, 3000);
 
             const lastTab = localStorage.getItem('activeTab') || 'ledger';
             const targetBtn = document.querySelector(`button[data-target="${lastTab}"]`);
@@ -265,11 +413,5 @@
                     deferredPrompt.userChoice.then((choiceResult) => { 
                         if (choiceResult.outcome === 'accepted') {
                             document.getElementById('installBtn').classList.add('hidden');
-                        }
-                    }); 
-                } 
-            });
-        }
-    </script>
-</body>
-</html>
+                            showToast('App installed successfully!');
+                     
