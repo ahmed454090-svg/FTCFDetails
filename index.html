@@ -1,149 +1,215 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     
     <link rel="manifest" href="manifest.json">
     <title>FTCF | Professional Portal</title>
+    
+    <!-- Tailwind CSS & Lucide Icons (2026 Modern Standard) -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&family=JetBrains+Mono:wght@400;800&display=swap');
-        body { background-color: #050505; font-family: 'Inter', sans-serif; overflow: hidden; margin: 0; }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
         
-        #splash { 
-            position: fixed; inset: 0; z-index: 9999; 
-            background: rgba(0, 0, 0, 0.75); 
-            backdrop-filter: blur(20px);
-            display: flex; flex-direction: column; justify-content: center; align-items: center; 
-            transition: opacity 0.4s ease-in-out; 
+        body { 
+            background-color: #030712; 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            margin: 0; 
+            -webkit-tap-highlight-color: transparent;
         }
         
-        .circle-container { position: relative; width: 130px; height: 130px; display: flex; justify-content: center; align-items: center; }
-        .circle { position: absolute; border: 3px solid transparent; border-radius: 50%; animation: rotate 3s linear infinite; }
-        .circle-1 { width: 100%; height: 100%; border-top: 3px solid #ffffff; }
-        .circle-2 { width: 85%; height: 85%; border-bottom: 3px solid #f59e0b; animation-direction: reverse; }
-        .ftcf-text { font-size: 1.75rem; font-weight: 800; color: #ffffff; letter-spacing: 1px; }
-        
-        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .tab-content { display: none; height: 100vh; width: 100vw; }
+        /* Glassmorphism Styles */
+        .glass-panel { 
+            background: rgba(17, 24, 39, 0.75); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+        }
+
+        .tab-content { display: none; height: 100vh; width: 100vw; position: relative; }
         .tab-content.active { display: block; }
         iframe { width: 100%; height: 100%; border: none; }
         
-        .luxury-nav { background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1); }
-        .tab-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); color: #94a3b8; opacity: 0.6; }
-        .tab-btn:hover { color: #ffffff; opacity: 1; }
-        .tab-btn.active-tab { color: #f59e0b !important; opacity: 1 !important; transform: translateY(-3px); }
-        .glass-card { background: rgba(15, 15, 15, 0.95); backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.12); }
+        /* Active Tab Indicator */
+        .nav-indicator {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Shimmer Loading Animation */
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
         
-        .bell-container { position: relative; }
-        .red-dot { position: absolute; top: 0px; right: 0px; width: 9px; height: 9px; background: #ef4444; border-radius: 50%; border: 2px solid #050505; }
+        @keyframes rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .spin-slow { animation: rotate 3s linear infinite; }
+        .spin-reverse { animation: rotate 2.5s linear infinite reverse; }
     </style>
 </head>
-<body class="text-slate-200">
+<body class="text-slate-100 antialiased selection:bg-amber-500 selection:text-black">
 
-    <!-- Splash Screen -->
-    <div id="splash">
-        <div class="circle-container">
-            <div class="circle circle-1"></div>
-            <div class="circle circle-2"></div>
-            <div class="ftcf-text">FTCF</div>
+    <!-- Offline Status Indicator -->
+    <div id="offline-banner" class="hidden fixed top-0 left-0 right-0 z-[1000] bg-red-600/90 backdrop-blur-md text-white text-xs font-semibold py-1 px-4 text-center border-b border-red-500/30">
+        <i data-lucide="wifi-off" class="w-3.5 h-3.5 inline mr-1 -mt-0.5"></i> Offline Mode: Pre-loaded cache available
+    </div>
+
+    <!-- Modern Splash Screen -->
+    <div id="splash" class="fixed inset-0 z-[9999] bg-black/80 backdrop-blur-2xl flex flex-col justify-center items-center transition-opacity duration-500">
+        <div class="relative w-32 h-32 flex justify-center items-center">
+            <div class="absolute inset-0 border-2 border-transparent border-t-white rounded-full spin-slow"></div>
+            <div class="absolute inset-2 border-2 border-transparent border-b-amber-500 rounded-full spin-reverse"></div>
+            <span class="text-2xl font-extrabold tracking-wider text-white">FTCF</span>
         </div>
-        <p class="text-amber-500 font-mono text-sm tracking-widest mt-6 font-bold uppercase">Family Trust Portal</p>
+        <p class="text-amber-500 font-mono text-xs tracking-[0.3em] mt-6 font-bold uppercase">Family Trust Portal</p>
     </div>
 
-    <!-- Quick Action Controls -->
-    <div class="fixed top-5 right-5 z-[60] flex gap-3">
-        <button id="installBtn" class="hidden w-10 h-10 rounded-full bg-black/40 border border-white/10 text-slate-300 hover:text-amber-500 backdrop-blur-md transition-all">
-            <i class="fas fa-download"></i>
-        </button>
-        <button onclick="toggleModal('bank-popup', true)" class="w-10 h-10 rounded-full bg-black/40 border border-white/10 text-slate-300 hover:text-amber-500 backdrop-blur-md transition-all">
-            <i class="fas fa-university"></i>
-        </button>
-        <button onclick="toggleModal('notice-popup', true)" class="w-10 h-10 rounded-full bg-black/40 border border-white/10 text-slate-300 hover:text-amber-500 backdrop-blur-md bell-container transition-all">
-            <i class="fas fa-bell"></i>
-            <span class="red-dot"></span>
-        </button>
-    </div>
+    <!-- Header & Quick Controls -->
+    <header class="fixed top-4 left-4 right-4 z-[60] flex justify-between items-center pointer-events-none">
+        <div class="glass-panel px-4 py-2 rounded-2xl flex items-center gap-2 pointer-events-auto">
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span id="page-title" class="text-xs font-semibold tracking-wide text-slate-300">Wallet Ledger</span>
+        </div>
+
+        <div class="flex gap-2 pointer-events-auto">
+            <button id="installBtn" class="hidden w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+                <i data-lucide="download" class="w-4 h-4"></i>
+            </button>
+            <button onclick="toggleModal('bank-popup', true)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+                <i data-lucide="building-2" class="w-4 h-4"></i>
+            </button>
+            <button onclick="toggleModal('notice-popup', true)" class="relative w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+                <i data-lucide="bell" class="w-4 h-4"></i>
+                <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-black"></span>
+            </button>
+        </div>
+    </header>
 
     <!-- Bank Modal -->
-    <div id="bank-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
-        <div class="glass-card p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl">
-            <h2 class="text-white text-lg font-bold mb-4 flex items-center justify-center gap-2">
-                <i class="fas fa-university text-amber-500"></i> HBL Konnect Details
-            </h2>
-            <div class="bg-black/40 p-4 rounded-2xl text-left border border-white/5 space-y-2 mb-6">
+    <div id="bank-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md transition-all">
+        <div class="glass-panel p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl border border-white/10">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="building-2" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-white text-base font-bold mb-4">HBL Konnect Details</h2>
+            <div class="bg-black/40 p-4 rounded-2xl text-left border border-white/5 space-y-3 mb-6">
                 <div>
-                    <span class="text-xs text-slate-400 block">Account Title</span>
+                    <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">Account Title</span>
                     <span class="text-sm text-white font-semibold">Afzaal Ahmed</span>
                 </div>
-                <div class="pt-2 border-t border-white/5">
-                    <span class="text-xs text-slate-400 block">Account / Mobile Number</span>
-                    <span class="text-sm text-amber-400 font-mono font-bold">0342-2735966</span>
+                <div class="pt-2 border-t border-white/5 flex justify-between items-center">
+                    <div>
+                        <span class="text-[10px] uppercase font-mono tracking-wider text-slate-400 block">Account / Mobile</span>
+                        <span class="text-sm text-amber-400 font-mono font-bold">0342-2735966</span>
+                    </div>
+                    <button onclick="copyAccount('03422735966')" class="p-2 text-slate-400 hover:text-amber-400 active:scale-90 transition-all">
+                        <i data-lucide="copy" class="w-4 h-4"></i>
+                    </button>
                 </div>
             </div>
-            <button onclick="toggleModal('bank-popup', false)" class="w-full py-3 bg-white/10 hover:bg-white/20 rounded-xl text-white font-semibold transition-all">Close</button>
+            <button onclick="toggleModal('bank-popup', false)" class="w-full py-3 bg-white/10 hover:bg-white/20 active:scale-95 rounded-xl text-white font-medium transition-all text-sm">Close</button>
         </div>
     </div>
 
     <!-- Notice Modal -->
-    <div id="notice-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md">
-        <div class="glass-card p-6 rounded-3xl w-full max-w-sm shadow-2xl">
-            <h2 class="text-white text-lg font-bold mb-3 flex items-center gap-2">
-                <i class="fas fa-bullhorn text-amber-500"></i> System Notice
-            </h2>
-            <p class="text-slate-300 text-sm leading-relaxed mb-6">
+    <div id="notice-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md transition-all">
+        <div class="glass-panel p-6 rounded-3xl w-full max-w-sm shadow-2xl border border-white/10">
+            <div class="w-12 h-12 bg-amber-500/10 text-amber-500 rounded-2xl flex items-center justify-center mb-4">
+                <i data-lucide="megaphone" class="w-6 h-6"></i>
+            </div>
+            <h2 class="text-white text-base font-bold mb-2">System Notice</h2>
+            <p class="text-slate-400 text-xs leading-relaxed mb-6">
                 Alhamdulillah! FTCF portal updates complete ho chuki hain. Safe aur fast browsing ke liye caching ko optimize kiya gaya hai.
             </p>
-            <button onclick="toggleModal('notice-popup', false)" class="w-full py-3 bg-amber-500/20 text-amber-400 hover:bg-amber-500/30 rounded-xl font-semibold transition-all">Acknowledge</button>
+            <button onclick="toggleModal('notice-popup', false)" class="w-full py-3 bg-amber-500 text-black hover:bg-amber-400 active:scale-95 rounded-xl font-semibold transition-all text-sm">Acknowledge</button>
         </div>
     </div>
 
-    <!-- Tab Contents (Lazy Loaded) -->
-    <div id="ledger" class="tab-content" data-src="https://ftcf20-hub.github.io/FTCF.com/"></div>
-    <div id="monthly" class="tab-content" data-src="https://ftcf20-hub.github.io/Monthly-Status/"></div>
-    <div id="yearly" class="tab-content" data-src="https://ftcf20-hub.github.io/Yearly-Record/"></div>
-    <div id="rules" class="tab-content" data-src="https://ftcf20-hub.github.io/Loneportal/"></div>
+    <!-- Tab Contents (Lazy Loaded + Shimmer Placeholder) -->
+    <div id="ledger" class="tab-content" data-title="Wallet Ledger" data-src="https://ftcf20-hub.github.io/FTCF.com/"></div>
+    <div id="monthly" class="tab-content" data-title="Monthly Status" data-src="https://ftcf20-hub.github.io/Monthly-Status/"></div>
+    <div id="yearly" class="tab-content" data-title="Yearly Record" data-src="https://ftcf20-hub.github.io/Yearly-Record/"></div>
+    <div id="rules" class="tab-content" data-title="Loan & Rules Portal" data-src="https://ftcf20-hub.github.io/Loneportal/"></div>
 
     <!-- Bottom Navigation -->
-    <nav class="fixed bottom-6 left-6 right-6 luxury-nav rounded-2xl flex justify-between items-center z-[99] h-16 px-6 shadow-2xl border border-white/10 max-w-md mx-auto">
-        <div class="flex gap-6">
-            <button data-target="ledger" onclick="switchTab('ledger', this)" class="tab-btn p-2"><i class="fas fa-wallet text-xl"></i></button>
-            <button data-target="monthly" onclick="switchTab('monthly', this)" class="tab-btn p-2"><i class="fas fa-calendar-check text-xl"></i></button>
-        </div>
-        <a href="https://chat.whatsapp.com/KuEfcgvGkOQHFY03h4IuHV?s=cl&p=a&ilr=1&amv=3" target="_blank" class="bg-amber-500 text-black w-12 h-12 flex items-center justify-center rounded-xl font-bold shadow-lg hover:bg-amber-400 transition-all -translate-y-2">
-            <i class="fab fa-whatsapp text-2xl"></i>
+    <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99] glass-panel rounded-3xl p-1.5 flex items-center shadow-2xl border border-white/10 max-w-xs w-full justify-between">
+        <button data-target="ledger" onclick="switchTab('ledger', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+            <i data-lucide="wallet" class="w-5 h-5"></i>
+        </button>
+        <button data-target="monthly" onclick="switchTab('monthly', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+            <i data-lucide="calendar-check-2" class="w-5 h-5"></i>
+        </button>
+        
+        <a href="https://chat.whatsapp.com/KuEfcgvGkOQHFY03h4IuHV?s=cl&p=a&ilr=1&amv=3" target="_blank" class="bg-amber-500 text-black w-11 h-11 flex items-center justify-center rounded-2xl font-bold shadow-lg shadow-amber-500/20 hover:bg-amber-400 active:scale-90 transition-all mx-1">
+            <i data-lucide="message-circle" class="w-5 h-5"></i>
         </a>
-        <div class="flex gap-6">
-            <button data-target="yearly" onclick="switchTab('yearly', this)" class="tab-btn p-2"><i class="fas fa-chart-line text-xl"></i></button>
-            <button data-target="rules" onclick="switchTab('rules', this)" class="tab-btn p-2"><i class="fas fa-gavel text-xl"></i></button>
-        </div>
+
+        <button data-target="yearly" onclick="switchTab('yearly', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+            <i data-lucide="trending-up" class="w-5 h-5"></i>
+        </button>
+        <button data-target="rules" onclick="switchTab('rules', this)" class="tab-btn flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
+            <i data-lucide="scale" class="w-5 h-5"></i>
+        </button>
     </nav>
 
     <script>
-        // Tab Switcher with Lazy Load Feature
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Dynamic Tab Switcher
         function switchTab(id, btnElement) { 
-            if (navigator.vibrate) navigator.vibrate(15); 
+            if (navigator.vibrate) navigator.vibrate([10, 30, 10]); 
             
-            // Hide all tab containers
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active-tab')); 
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('text-amber-500', 'bg-white/5')); 
             
             const targetContainer = document.getElementById(id);
             targetContainer.classList.add('active');
             
-            // Lazy load iframe content if not loaded yet
+            // Update Page Title
+            const pageTitle = targetContainer.getAttribute('data-title');
+            document.getElementById('page-title').innerText = pageTitle;
+
+            // Lazy Load with Shimmer Loading Placeholder
             if (!targetContainer.querySelector('iframe')) {
+                const shimmerLoader = document.createElement('div');
+                shimmerLoader.className = 'absolute inset-0 shimmer flex items-center justify-center';
+                shimmerLoader.innerHTML = `<span class="text-xs font-mono text-slate-500">Loading ${pageTitle}...</span>`;
+                targetContainer.appendChild(shimmerLoader);
+
                 const iframe = document.createElement('iframe');
                 iframe.src = targetContainer.getAttribute('data-src');
+                iframe.onload = () => shimmerLoader.remove();
                 targetContainer.appendChild(iframe);
             }
             
             if (btnElement) {
-                btnElement.classList.add('active-tab');
+                btnElement.classList.add('text-amber-500', 'bg-white/5');
             }
             
             localStorage.setItem('activeTab', id); 
@@ -159,17 +225,43 @@
             }
         }
 
-        // Initial Setup
+        // Account Copy Helper
+        function copyAccount(num) {
+            navigator.clipboard.writeText(num);
+            if (navigator.vibrate) navigator.vibrate(20);
+            alert('Account number copied!');
+        }
+
+        // Network Status Detection
+        window.addEventListener('online', () => document.getElementById('offline-banner').classList.add('hidden'));
+        window.addEventListener('offline', () => document.getElementById('offline-banner').classList.remove('hidden'));
+
+        // Keyboard Navigation (Desktop)
+        window.addEventListener('keydown', (e) => {
+            if (e.altKey) {
+                if (e.key === '1') switchTab('ledger', document.querySelector('[data-target="ledger"]'));
+                if (e.key === '2') switchTab('monthly', document.querySelector('[data-target="monthly"]'));
+                if (e.key === '3') switchTab('yearly', document.querySelector('[data-target="yearly"]'));
+                if (e.key === '4') switchTab('rules', document.querySelector('[data-target="rules"]'));
+            }
+        });
+
+        // App Initialization
         window.addEventListener('load', () => {
             const splash = document.getElementById('splash');
             setTimeout(() => {
                 splash.style.opacity = '0';
-                setTimeout(() => { splash.style.display = 'none'; }, 400);
-            }, 800);
+                setTimeout(() => { splash.style.display = 'none'; }, 500);
+            }, 600);
 
             const lastTab = localStorage.getItem('activeTab') || 'ledger';
             const targetBtn = document.querySelector(`button[data-target="${lastTab}"]`);
             switchTab(lastTab, targetBtn);
+
+            // Register Service Worker for PWA
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+            }
         });
 
         // PWA Installation Hook
@@ -193,4 +285,3 @@
     </script>
 </body>
 </html>
-
