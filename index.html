@@ -8,7 +8,7 @@
     <link rel="manifest" href="manifest.json">
     <title>FTCF | Professional Portal</title>
     
-    <!-- Tailwind CSS & Lucide Icons (2026 Modern Standard) -->
+    <!-- Tailwind CSS & Lucide Icons -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
@@ -53,11 +53,6 @@
         .tab-content { display: none; height: 100vh; width: 100vw; position: relative; }
         .tab-content.active { display: block; }
         iframe { width: 100%; height: 100%; border: none; }
-        
-        /* Active Tab Indicator */
-        .nav-indicator {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
 
         /* Shimmer Loading Animation */
         .shimmer {
@@ -93,7 +88,7 @@
     <header class="fixed top-4 left-4 right-4 z-[60] flex justify-between items-center pointer-events-none">
         <div class="glass-panel px-4 py-2 rounded-2xl flex items-center gap-2 pointer-events-auto">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span id="page-title" class="text-xs font-semibold tracking-wide text-slate-300">Wallet Ledger</span>
+            <span class="text-xs font-semibold tracking-wide text-slate-300">FTCF Portal</span>
         </div>
 
         <div class="flex gap-2 pointer-events-auto">
@@ -151,10 +146,10 @@
     </div>
 
     <!-- Tab Contents (Lazy Loaded + Shimmer Placeholder) -->
-    <div id="ledger" class="tab-content" data-title="Wallet Ledger" data-src="https://ftcf20-hub.github.io/FTCF.com/"></div>
-    <div id="monthly" class="tab-content" data-title="Monthly Status" data-src="https://ftcf20-hub.github.io/Monthly-Status/"></div>
-    <div id="yearly" class="tab-content" data-title="Yearly Record" data-src="https://ftcf20-hub.github.io/Yearly-Record/"></div>
-    <div id="rules" class="tab-content" data-title="Loan & Rules Portal" data-src="https://ftcf20-hub.github.io/Loneportal/"></div>
+    <div id="ledger" class="tab-content" data-src="https://ftcf20-hub.github.io/FTCF.com/"></div>
+    <div id="monthly" class="tab-content" data-src="https://ftcf20-hub.github.io/Monthly-Status/"></div>
+    <div id="yearly" class="tab-content" data-src="https://ftcf20-hub.github.io/Yearly-Record/"></div>
+    <div id="rules" class="tab-content" data-src="https://ftcf20-hub.github.io/Loneportal/"></div>
 
     <!-- Bottom Navigation -->
     <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99] glass-panel rounded-3xl p-1.5 flex items-center shadow-2xl border border-white/10 max-w-xs w-full justify-between">
@@ -181,7 +176,7 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
-        // Dynamic Tab Switcher
+        // Tab Switcher
         function switchTab(id, btnElement) { 
             if (navigator.vibrate) navigator.vibrate([10, 30, 10]); 
             
@@ -190,16 +185,12 @@
             
             const targetContainer = document.getElementById(id);
             targetContainer.classList.add('active');
-            
-            // Update Page Title
-            const pageTitle = targetContainer.getAttribute('data-title');
-            document.getElementById('page-title').innerText = pageTitle;
 
             // Lazy Load with Shimmer Loading Placeholder
             if (!targetContainer.querySelector('iframe')) {
                 const shimmerLoader = document.createElement('div');
                 shimmerLoader.className = 'absolute inset-0 shimmer flex items-center justify-center';
-                shimmerLoader.innerHTML = `<span class="text-xs font-mono text-slate-500">Loading ${pageTitle}...</span>`;
+                shimmerLoader.innerHTML = `<span class="text-xs font-mono text-slate-500">Loading...</span>`;
                 targetContainer.appendChild(shimmerLoader);
 
                 const iframe = document.createElement('iframe');
