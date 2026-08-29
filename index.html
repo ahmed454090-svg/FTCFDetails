@@ -84,6 +84,20 @@
         <p class="text-amber-500 font-mono text-xs tracking-[0.3em] mt-6 font-bold uppercase">Mughal Brothers Network</p>
     </div>
 
+    <!-- Header Controls (Bank & Notice Controls Restored) -->
+    <header class="fixed top-4 right-4 z-[60] flex gap-2 pointer-events-auto">
+        <button id="installBtn" class="hidden w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+            <i data-lucide="download" class="w-4 h-4"></i>
+        </button>
+        <button onclick="toggleModal('bank-popup', true)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+            <i data-lucide="building-2" class="w-4 h-4"></i>
+        </button>
+        <button onclick="toggleModal('notice-popup', true)" class="relative w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
+            <i data-lucide="bell" class="w-4 h-4"></i>
+            <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-black"></span>
+        </button>
+    </header>
+
     <!-- Bank Modal -->
     <div id="bank-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md transition-all">
         <div class="glass-panel p-6 rounded-3xl w-full max-w-sm text-center shadow-2xl border border-white/10">
