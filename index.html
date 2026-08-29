@@ -186,7 +186,7 @@
     </div>
 
     <!-- Golden Circle 3D Splash Screen -->
-    <div id="splash" class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-2xl flex flex-col justify-center items-center transition-all duration-500 bg-tech-grid">
+    <div id="splash" class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-2xl flex flex-col justify-center items-center transition-all duration-500 bg-tech-grid pointer-events-auto">
         <div class="absolute w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="perspective-container relative">
@@ -267,7 +267,7 @@
     <div id="yearly" class="tab-content" data-src="https://ftcf20-hub.github.io/Yearly-Record/"></div>
     <div id="rules" class="tab-content" data-src="https://ftcf20-hub.github.io/Loneportal/"></div>
 
-    <!-- Bottom Navigation with Dynamic Animated Pill Indicator -->
+    <!-- Bottom Navigation -->
     <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[99] glass-panel rounded-3xl p-1.5 flex items-center shadow-2xl border border-white/10 max-w-xs w-full justify-between relative">
         <button data-target="ledger" onclick="switchTab('ledger', this)" class="tab-btn z-10 flex-1 py-3 flex flex-col items-center justify-center text-slate-400 hover:text-white transition-all rounded-2xl active:scale-95">
             <i data-lucide="wallet" class="w-5 h-5"></i>
@@ -377,15 +377,23 @@
             }
         });
 
-        // App Initialization (3 Seconds Smooth Fade Reveal)
-        window.addEventListener('load', () => {
+        // Guaranteed Auto-Hide Splash Logic (Fixed Execution)
+        function hideSplash() {
             const splash = document.getElementById('splash');
-            setTimeout(() => {
+            if (splash && splash.style.display !== 'none') {
                 splash.style.opacity = '0';
                 splash.style.transform = 'scale(1.05)';
-                setTimeout(() => { splash.style.display = 'none'; }, 500);
-            }, 3000);
+                setTimeout(() => { 
+                    splash.style.display = 'none'; 
+                }, 500);
+            }
+        }
 
+        // Trigger Auto Hide strictly after 3 Seconds
+        setTimeout(hideSplash, 3000);
+
+        // App Initialization
+        window.addEventListener('DOMContentLoaded', () => {
             const lastTab = localStorage.getItem('activeTab') || 'ledger';
             const targetBtn = document.querySelector(`button[data-target="${lastTab}"]`);
             switchTab(lastTab, targetBtn);
@@ -411,7 +419,4 @@
                 if (deferredPrompt) { 
                     deferredPrompt.prompt(); 
                     deferredPrompt.userChoice.then((choiceResult) => { 
-                        if (choiceResult.outcome === 'accepted') {
-                            document.getElementById('installBtn').classList.add('hidden');
-                            showToast('App installed successfully!');
-                     
+                        if 
