@@ -81,29 +81,8 @@
             <div class="absolute inset-2 border-2 border-transparent border-b-amber-500 rounded-full spin-reverse"></div>
             <span class="text-2xl font-extrabold tracking-wider text-white">FTCF</span>
         </div>
-        <p class="text-amber-500 font-mono text-xs tracking-[0.3em] mt-6 font-bold uppercase">Mughal Brothers Network</p>
+        <p class="text-amber-500 font-mono text-xs tracking-[0.3em] mt-6 font-bold uppercase">Family Trust Portal</p>
     </div>
-
-    <!-- Header & Quick Controls -->
-    <header class="fixed top-4 left-4 right-4 z-[60] flex justify-between items-center pointer-events-none">
-        <div class="glass-panel px-4 py-2 rounded-2xl flex items-center gap-2 pointer-events-auto">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-xs font-semibold tracking-wide text-slate-300"></span>
-        </div>
-
-        <div class="flex gap-2 pointer-events-auto">
-            <button id="installBtn" class="hidden w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
-                <i data-lucide="download" class="w-4 h-4"></i>
-            </button>
-            <button onclick="toggleModal('bank-popup', true)" class="w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
-                <i data-lucide="building-2" class="w-4 h-4"></i>
-            </button>
-            <button onclick="toggleModal('notice-popup', true)" class="relative w-10 h-10 rounded-2xl glass-panel flex items-center justify-center text-slate-300 hover:text-amber-500 active:scale-95 transition-all">
-                <i data-lucide="bell" class="w-4 h-4"></i>
-                <span class="absolute top-2.5 right-2.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-black"></span>
-            </button>
-        </div>
-    </header>
 
     <!-- Bank Modal -->
     <div id="bank-popup" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/70 backdrop-blur-md transition-all">
@@ -260,19 +239,23 @@
         window.addEventListener('beforeinstallprompt', (e) => { 
             e.preventDefault(); 
             deferredPrompt = e; 
-            document.getElementById('installBtn').classList.remove('hidden'); 
+            if (document.getElementById('installBtn')) {
+                document.getElementById('installBtn').classList.remove('hidden'); 
+            }
         });
 
-        document.getElementById('installBtn').addEventListener('click', () => { 
-            if (deferredPrompt) { 
-                deferredPrompt.prompt(); 
-                deferredPrompt.userChoice.then((choiceResult) => { 
-                    if (choiceResult.outcome === 'accepted') {
-                        document.getElementById('installBtn').classList.add('hidden');
-                    }
-                }); 
-            } 
-        });
+        if (document.getElementById('installBtn')) {
+            document.getElementById('installBtn').addEventListener('click', () => { 
+                if (deferredPrompt) { 
+                    deferredPrompt.prompt(); 
+                    deferredPrompt.userChoice.then((choiceResult) => { 
+                        if (choiceResult.outcome === 'accepted') {
+                            document.getElementById('installBtn').classList.add('hidden');
+                        }
+                    }); 
+                } 
+            });
+        }
     </script>
 </body>
 </html>
