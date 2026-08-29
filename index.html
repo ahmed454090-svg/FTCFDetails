@@ -185,8 +185,8 @@
         <span id="toast-msg" class="text-xs font-semibold text-white tracking-wide">Account number copied!</span>
     </div>
 
-    <!-- Golden Circle 3D Splash Screen -->
-    <div id="splash" class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-2xl flex flex-col justify-center items-center transition-all duration-500 bg-tech-grid pointer-events-auto">
+    <!-- Golden Circle 3D Splash Screen (Includes Click-to-Dismiss Backup) -->
+    <div id="splash" onclick="dismissSplash()" class="fixed inset-0 z-[9999] bg-black/85 backdrop-blur-2xl flex flex-col justify-center items-center transition-all duration-500 bg-tech-grid cursor-pointer">
         <div class="absolute w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="perspective-container relative">
@@ -292,6 +292,20 @@
         // Initialize Lucide Icons
         lucide.createIcons();
 
+        // Direct Fail-Safe Splash Screen Remover
+        function dismissSplash() {
+            var el = document.getElementById('splash');
+            if (el) {
+                el.style.opacity = '0';
+                setTimeout(function() {
+                    el.style.setProperty('display', 'none', 'important');
+                }, 300);
+            }
+        }
+
+        // Strict 3 Seconds Timer
+        setTimeout(dismissSplash, 3000);
+
         // Custom Toast Notification Helper
         function showToast(message) {
             const toast = document.getElementById('toast');
@@ -367,33 +381,8 @@
             showToast('Offline Mode Activated');
         });
 
-        // Keyboard Navigation (Desktop)
-        window.addEventListener('keydown', (e) => {
-            if (e.altKey) {
-                if (e.key === '1') switchTab('ledger', document.querySelector('[data-target="ledger"]'));
-                if (e.key === '2') switchTab('monthly', document.querySelector('[data-target="monthly"]'));
-                if (e.key === '3') switchTab('yearly', document.querySelector('[data-target="yearly"]'));
-                if (e.key === '4') switchTab('rules', document.querySelector('[data-target="rules"]'));
-            }
-        });
-
-        // Guaranteed Auto-Hide Splash Logic (Fixed Execution)
-        function hideSplash() {
-            const splash = document.getElementById('splash');
-            if (splash && splash.style.display !== 'none') {
-                splash.style.opacity = '0';
-                splash.style.transform = 'scale(1.05)';
-                setTimeout(() => { 
-                    splash.style.display = 'none'; 
-                }, 500);
-            }
-        }
-
-        // Trigger Auto Hide strictly after 3 Seconds
-        setTimeout(hideSplash, 3000);
-
         // App Initialization
-        window.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', () => {
             const lastTab = localStorage.getItem('activeTab') || 'ledger';
             const targetBtn = document.querySelector(`button[data-target="${lastTab}"]`);
             switchTab(lastTab, targetBtn);
@@ -419,4 +408,14 @@
                 if (deferredPrompt) { 
                     deferredPrompt.prompt(); 
                     deferredPrompt.userChoice.then((choiceResult) => { 
-                        if 
+                        if (choiceResult.outcome === 'accepted') {
+                            document.getElementById('installBtn').classList.add('hidden');
+                            showToast('App installed successfully!');
+                        }
+                    }); 
+                } 
+            });
+        }
+    </script>
+</body>
+</html>
